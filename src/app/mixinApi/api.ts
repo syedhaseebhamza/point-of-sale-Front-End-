@@ -31,7 +31,7 @@ async function makeApiCall<T>({
   const token = localStorage.getItem("token");
 
   if (token !== null && !noAuth) {
-    headers.Authorization = `JWT ${token}`;
+    headers.Authorization = `Bearer ${token}`;
   }
   const response = await axios<T>({
     method,
