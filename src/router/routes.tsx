@@ -1,20 +1,21 @@
 import Layout from "@/components/layout";
 import Counter from "@/pages/Counter";
+import Home from "@/pages/Home";
 import Login from "@/pages/Login";
-import { createBrowserRouter as Router } from "react-router-dom";
+import { Navigate, createBrowserRouter as Router } from "react-router-dom";
 
 export const nonAuthRoutes = Router([
   {
     path: "*",
-    element: <div>Page not found</div>,
+    element: <Navigate to="/counter" replace />,
   },
   {
     path: "/",
     element: <Layout />,
     children: [
       {
-        path: "/",
-        element: <div>Home page</div>,
+        path: "/home",
+        element: <Home />,
       },
       {
         path: "/about",

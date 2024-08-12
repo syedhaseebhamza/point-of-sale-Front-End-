@@ -7,7 +7,7 @@ export default function Header() {
          w-full bg-slate-300"
     >
       <NavLink
-        to="/"
+        to="/home"
         className={({ isActive }) => `${isActive && "text-red-600"}`}
       >
         Home

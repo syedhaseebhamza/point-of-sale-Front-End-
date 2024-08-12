@@ -1,9 +1,19 @@
 import { RouterProvider } from "react-router-dom";
 import { useAppSelector } from "@/app/hooks";
 import { nonAuthRoutes, authRoutes } from "./routes";
-
-const user = useAppSelector((state) => state.auth);
+import { useMemo } from "react";
 
 export default function RouterView() {
-  return <RouterProvider router={nonAuthRoutes} />;
+  // const user = useAppSelector((state) => state.auth);
+
+  const token = localStorage.getItem("token");
+  const routes = useMemo(() => {
+    if (token) {
+      return nonAuthRoutes;
+    } else {
+      return authRoutes;
+    }
+  }, [token]);
+
+  return <RouterProvider router={routes} />;
 }
