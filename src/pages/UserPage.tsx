@@ -1,9 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faEdit, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { createUser } from "../app/features/admin/adminSlice";
+import { getAllSubUser } from "../app/features/admin/adminApi";
+interface SubUser {
+  _id: string;
+  username: string;
+  role: string;
+}
 
 function UserPage() {
+  const dispatch = useAppDispatch();
   const [showModal, setShowModal] = useState(false);
+  const [subUsers, setSubUsers] = useState<SubUser[]>([]);
+  const [showSpinner, setShowSpinner] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -18,16 +29,31 @@ function UserPage() {
       [name]: value,
     });
   };
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    setShowModal(false);
-    setFormData({
-      username: "",
-      password: "",
-      role: "cashier",
-    });
+    setShowSpinner(true);
+    try {
+      await dispatch(createUser(formData));
+      const response = await getAllSubUser();
+      setSubUsers(response);
+    } catch (error: any) {
+      console.log(error);
+    } finally {
+      setShowSpinner(false);
+      setShowModal(false);
+    }
   };
+  useEffect(() => {
+    getAllSubUser()
+      .then((res) => {
+        console.log("res", res);
+        setSubUsers(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   return (
     <div>
       <div className="p-8">
@@ -41,6 +67,7 @@ function UserPage() {
                 role: "cashier",
               });
               setShowModal(true);
+              console.log("asdasdas", subUsers);
             }}
             className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
           >
@@ -133,6 +160,14 @@ function UserPage() {
                         type="submit"
                         className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                       >
+                        {showSpinner && (
+                          <span className="pr-[7px]">
+                            <FontAwesomeIcon
+                              icon={faSpinner}
+                              className="animate-spin text-[1rem]"
+                            />
+                          </span>
+                        )}
                         Add User
                       </button>
                     </div>
@@ -160,20 +195,26 @@ function UserPage() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="py-2 px-4 border-b border-gray-300">john_doe</td>
-                <td className="py-2 px-4 border-b border-gray-300">Cashier</td>
-                <td className="py-2 px-4 border-b border-gray-300">
-                  <div className="flex items-center gap-3">
-                    <span>
-                      <FontAwesomeIcon icon={faEdit} />
-                    </span>
-                    <span>
-                      <FontAwesomeIcon icon={faTrash} />
-                    </span>
-                  </div>
-                </td>
-              </tr>
+              {subUsers.map((user) => (
+                <tr key={user._id}>
+                  <td className="py-2 px-4 border-b border-gray-300">
+                    {user.username}
+                  </td>
+                  <td className="py-2 px-4 border-b border-gray-300">
+                    {user.role}
+                  </td>
+                  <td className="py-2 px-4 border-b border-gray-300">
+                    <div className="flex items-center gap-[20px]">
+                      <span>
+                        <FontAwesomeIcon icon={faEdit} />
+                      </span>
+                      <span>
+                        <FontAwesomeIcon icon={faTrash} />
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

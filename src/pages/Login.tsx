@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { login } from "../app/features/Auth/AuthSlice";
+import { login } from "../app/features/Auth/authSlice";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const user = useAppSelector((state) => state.auth);
   const [credentials, setCredentials] = useState({
     username: "",
     password: "",
