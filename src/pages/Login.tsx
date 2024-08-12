@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import axios from "axios";
 import { login } from "../app/features/Auth/AuthSlice";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth);
   const [credentials, setCredentials] = useState({
     username: "",
@@ -22,8 +24,8 @@ function Login() {
   const handelSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const resultAction = await dispatch(login(credentials)).unwrap();
-      console.log("Redux State after Login:", resultAction);
+      await dispatch(login(credentials)).unwrap();
+      navigate("/counter", { replace: true });
     } catch (error: any) {
       console.log(error);
     }
