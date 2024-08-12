@@ -2,21 +2,22 @@ import Layout from "@/components/layout";
 import Counter from "@/pages/Counter";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
+import UserPage from "@/pages/UserPage";
 import { Navigate, createBrowserRouter as Router } from "react-router-dom";
 
 export const nonAuthRoutes = Router([
   {
     path: "*",
-    element: <Navigate to="/counter" replace />,
+    element: <Navigate to="/" replace />,
   },
   {
     path: "/",
     element: <Layout />,
     children: [
-      {
-        path: "/home",
-        element: <Home />,
-      },
+      // {
+      //   path: "/",
+      //   element: <Home />,
+      // },
       {
         path: "/about",
         element: (
@@ -26,6 +27,10 @@ export const nonAuthRoutes = Router([
       {
         path: "/counter",
         element: <Counter />,
+      },
+      {
+        path: "/user",
+        element: <UserPage />,
       },
     ],
   },
