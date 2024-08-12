@@ -57,12 +57,7 @@ function Login() {
             </div>
 
             <div>
-              <label
-                onClick={() => {
-                  console.log("helo", user);
-                }}
-                className="text-gray-800 text-[15px] mb-2 block"
-              >
+              <label className="text-gray-800 text-[15px] mb-2 block">
                 Email
               </label>
               <div className="relative flex items-center">
