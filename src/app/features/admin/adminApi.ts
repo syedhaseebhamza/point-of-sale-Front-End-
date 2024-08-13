@@ -29,3 +29,15 @@ export const getAllSubUser = async () => {
     throw new Error("Failed to fetch users");
   }
 };
+
+export const deleteSubUser = async (id: string) => {
+  try {
+    const response = await makeApiCall<any>({
+      url: `user/delete/${id}`,
+      method: "DELETE",
+    });
+    return response;
+  } catch (error) {
+    throw new Error("faild to delete subuser");
+  }
+};
