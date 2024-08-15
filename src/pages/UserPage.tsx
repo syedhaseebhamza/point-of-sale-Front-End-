@@ -3,7 +3,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faEdit, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { createUser } from "../app/features/admin/adminSlice";
-import { getAllSubUser, deleteSubUser } from "../app/features/admin/adminApi";
+import {
+  getAllSubUser,
+  deleteSubUser,
+  editSubUser,
+} from "../app/features/admin/adminApi";
 import Modal from "@/components/common/modal";
 import Button from "@/components/common/button";
 interface SubUser {
@@ -17,12 +21,19 @@ function UserPage() {
   const [showModal, setShowModal] = useState(false);
   const [subUsers, setSubUsers] = useState<SubUser[]>([]);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState("");
   const [showSpinner, setShowSpinner] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     password: "",
     role: "cashier",
   });
+  const [editUser, setEditUser] = useState({
+    username: "",
+    role: "",
+  });
+
+
   const handleFormChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -32,6 +43,19 @@ function UserPage() {
       [name]: value,
     });
   };
+
+
+  const handleEditFormChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setEditUser({
+      ...editUser,
+      [name]: value,
+    });
+  };
+
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setShowSpinner(true);
@@ -47,6 +71,26 @@ function UserPage() {
     }
   };
 
+
+  const handleUpdateUser = async () => {
+    if (selectedUser) {
+      try {
+        const updatedUser = await editSubUser(selectedUser, editUser);
+        setSubUsers(
+          subUsers.map((user) =>
+            user._id === updatedUser._id ? updatedUser : user
+          )
+        );
+      } catch (error) {
+        console.log("edit error", error);
+      } finally {
+        setShowSpinner(false);
+        setShowEditModal(false);
+      }
+    }
+  };
+
+
   const handelDeleteUser = (id: string) => {
     deleteSubUser(id)
       .then((res) => {
@@ -57,6 +101,8 @@ function UserPage() {
         console.log("delete error", err);
       });
   };
+
+  
   useEffect(() => {
     getAllSubUser()
       .then((res) => {
@@ -108,12 +154,22 @@ function UserPage() {
                     <div className="flex items-center gap-[20px]">
                       <span>
                         <FontAwesomeIcon
+                          className="cursor-pointer"
                           icon={faEdit}
-                          onClick={() => setShowEditModal(true)}
+                          onClick={() => {
+                            setEditUser({
+                              username: user.username,
+                              role: user.role,
+                            });
+
+                            setShowEditModal(true);
+                            setSelectedUser(user._id);
+                          }}
                         />
                       </span>
                       <span>
                         <FontAwesomeIcon
+                          className="cursor-pointer"
                           icon={faTrash}
                           onClick={() => handelDeleteUser(user._id)}
                         />
@@ -186,6 +242,58 @@ function UserPage() {
               className="tw-h-[45px]"
               variant="dark_hover"
               onClick={handleSubmit}
+              isLoading={showSpinner}
+            />
+          }
+        />
+      )}
+      {showEditModal && (
+        <Modal
+          show={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          heading="Update User"
+          size="md"
+          content={
+            <div>
+              <div className="mb-4">
+                <label htmlFor="username" className="block text-gray-700">
+                  Username
+                </label>
+                <input
+                  onChange={handleEditFormChange}
+                  value={editUser.username}
+                  type="text"
+                  id="username"
+                  name="username"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  placeholder="Enter username"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="role" className="block text-gray-700">
+                  Role
+                </label>
+                <select
+                  value={editUser.role}
+                  onChange={handleEditFormChange}
+                  id="role"
+                  name="role"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                >
+                  <option value="cashier">Cashier</option>
+                  <option value="manager">Manager</option>
+                </select>
+              </div>
+            </div>
+          }
+          footerContent={
+            <Button
+              type="button"
+              label={"Update"}
+              className="tw-h-[45px]"
+              variant="dark_hover"
+              onClick={handleUpdateUser}
               isLoading={showSpinner}
             />
           }

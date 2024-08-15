@@ -1,24 +1,28 @@
-import { Outlet } from "react-router-dom";
+import { useState } from "react";
 import Header from "./Header";
-import Footer from "./Footer";
 import Sidebar from "./Sidebar";
+import { Outlet } from "react-router-dom";
 
 export default function Layout() {
-  return (
-    <div>
-      <div className="flex h-[100vh]">
-        <div className="min-w-[25rem]">
-          <Sidebar />
-        </div>
+  const [sidebarWidth, setSidebarWidth] = useState<boolean>(true);
 
-        <div className="w-full flex flex-col justify-between">
-          <Header />
-          <div className="">
-            <Outlet />
-          </div>
-          <div className="w-full">
-            <Footer />
-          </div>
+  return (
+    <div className="flex">
+      <div
+        className={`transition-all duration-300 ease-in-out ${
+          sidebarWidth ? "w-0 opacity-0" : "w-1/5"
+        } bg-[#646745f4] h-screen`}
+      >
+        <Sidebar />
+      </div>
+      <div
+        className={`transition-all duration-300 ease-in-out ${
+          sidebarWidth ? "w-full" : "w-4/5"
+        }`}
+      >
+        <Header setSidebarWidth={setSidebarWidth} sidebarWidth={sidebarWidth} />
+        <div className="p-4">
+          <Outlet />
         </div>
       </div>
     </div>

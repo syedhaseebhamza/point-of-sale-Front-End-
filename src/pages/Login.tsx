@@ -23,7 +23,7 @@ function Login() {
     e.preventDefault();
     try {
       await dispatch(login(credentials)).unwrap();
-      navigate("/counter", { replace: true });
+      navigate("/user", { replace: true });
     } catch (error: any) {
       console.log(error);
     }
