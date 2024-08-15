@@ -41,3 +41,16 @@ export const deleteSubUser = async (id: string) => {
     throw new Error("faild to delete subuser");
   }
 };
+
+export const editSubUser = async (id: string, data: any) => {
+  try {
+    const responce = await makeApiCall<any>({
+      url: `user/update/${id}`,
+      method: "PATCH",
+      data: data,
+    });
+    return responce;
+  } catch (error) {
+    throw new Error("faild to update subuser ");
+  }
+};
