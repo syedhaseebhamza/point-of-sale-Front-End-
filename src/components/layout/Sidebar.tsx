@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 
 const sideBarMenu = [
   { menuName: "User Management", path: "/user" },
-  { menuName: "Setting", path: "/counter" },
+  { menuName: "Role Permission", path: "/rolepermission" },
 ];
 
 function Sidebar() {

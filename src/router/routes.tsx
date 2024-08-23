@@ -2,6 +2,7 @@ import Layout from "@/components/layout";
 import Counter from "@/pages/Counter";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
+import RolePermission from "@/pages/RolePermission";
 import UserPage from "@/pages/UserPage";
 import { Navigate, createBrowserRouter as Router } from "react-router-dom";
 
@@ -31,6 +32,10 @@ export const nonAuthRoutes = Router([
       {
         path: "/user",
         element: <UserPage />,
+      },
+      {
+        path: "/rolepermission",
+        element: <RolePermission />,
       },
     ],
   },

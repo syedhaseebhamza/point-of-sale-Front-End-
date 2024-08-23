@@ -302,5 +302,4 @@ function UserPage() {
     </div>
   );
 }
-
 export default UserPage;
