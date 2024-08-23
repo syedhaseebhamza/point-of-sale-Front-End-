@@ -1,6 +1,8 @@
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import MenuIcon from "@mui/icons-material/Menu";
 import { FC } from "react";
+import Button from "../common/button";
+import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
   sidebarWidth: boolean;
@@ -8,6 +10,7 @@ interface HeaderProps {
 }
 
 const Header: FC<HeaderProps> = ({ sidebarWidth, setSidebarWidth }) => {
+  const navigate = useNavigate();
   return (
     <div
       style={{
@@ -36,6 +39,17 @@ const Header: FC<HeaderProps> = ({ sidebarWidth, setSidebarWidth }) => {
             />
           </div>
         )}
+      </div>
+      <div>
+        <Button
+          onClick={() => {
+            localStorage.clear();
+            navigate("/login");
+            window.location.href = "/login";
+          }}
+          label="Logout"
+          className="bg-[red] text-[black]"
+        />
       </div>
     </div>
   );
