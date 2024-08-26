@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faEdit, faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { createUser } from "../app/features/admin/adminSlice";
-import {
-  getAllSubUser,
-  deleteSubUser,
-  editSubUser,
-} from "../app/features/admin/adminApi";
-import Modal from "@/components/common/modal";
+import { getAllSubUser, deleteSubUser } from "../app/features/admin/adminApi";
 import Button from "@/components/common/button";
+import Modal from "@/components/common/modal/modal";
+import NewUser from "@/components/AddNewUser";
+import EditUser from "@/components/EditUser";
 interface SubUser {
   _id: string;
   username: string;
@@ -17,79 +13,15 @@ interface SubUser {
 }
 
 function UserPage() {
-  const dispatch = useAppDispatch();
-  const [showModal, setShowModal] = useState(false);
   const [subUsers, setSubUsers] = useState<SubUser[]>([]);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState("");
-  const [showSpinner, setShowSpinner] = useState(false);
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-    role: "cashier",
-  });
-  const [editUser, setEditUser] = useState({
-    username: "",
-    role: "",
-  });
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const [showAddNewUSerModal, setShowAddNewUSerModal] = useState(false);
+  const [showEditUSerModal, setShowEditUSerModal] = useState(false);
 
+  const openAddNewUserModal = () => setShowAddNewUSerModal(true);
+  const closeAddNewUserModal = () => setShowAddNewUSerModal(false);
 
-  const handleFormChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-
-  const handleEditFormChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setEditUser({
-      ...editUser,
-      [name]: value,
-    });
-  };
-
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setShowSpinner(true);
-    try {
-      await dispatch(createUser(formData));
-      const response = await getAllSubUser();
-      setSubUsers(response);
-    } catch (error: any) {
-      console.log(error);
-    } finally {
-      setShowSpinner(false);
-      setShowModal(false);
-    }
-  };
-
-
-  const handleUpdateUser = async () => {
-    if (selectedUser) {
-      try {
-        const updatedUser = await editSubUser(selectedUser, editUser);
-        setSubUsers(
-          subUsers.map((user) =>
-            user._id === updatedUser._id ? updatedUser : user
-          )
-        );
-      } catch (error) {
-        console.log("edit error", error);
-      } finally {
-        setShowSpinner(false);
-        setShowEditModal(false);
-      }
-    }
-  };
-
+  const closeEditUserModal = () => setShowEditUSerModal(false);
 
   const handelDeleteUser = (id: string) => {
     deleteSubUser(id)
@@ -102,7 +34,6 @@ function UserPage() {
       });
   };
 
-  
   useEffect(() => {
     getAllSubUser()
       .then((res) => {
@@ -120,7 +51,7 @@ function UserPage() {
         <div className="flex justify-end items-center gap-3">
           <h1 className="text-2xl font-bold mb-[0.5rem]">User Management</h1>
           <Button
-            onClick={() => setShowModal(true)}
+            onClick={openAddNewUserModal}
             variant="dark_hover"
             label="Add User"
           />
@@ -157,13 +88,8 @@ function UserPage() {
                           className="cursor-pointer"
                           icon={faEdit}
                           onClick={() => {
-                            setEditUser({
-                              username: user.username,
-                              role: user.role,
-                            });
-
-                            setShowEditModal(true);
-                            setSelectedUser(user._id);
+                            setSelectedUserId(user._id);
+                            setShowEditUSerModal(true);
                           }}
                         />
                       </span>
@@ -182,123 +108,23 @@ function UserPage() {
           </table>
         </div>
       </div>
-      {showModal && (
-        <Modal
-          show={showModal}
-          onClose={() => setShowModal(false)}
-          heading="Add New User"
-          size="md"
-          content={
-            <div>
-              <div className="mb-4">
-                <label htmlFor="username" className="block text-gray-700">
-                  Username
-                </label>
-                <input
-                  onChange={handleFormChange}
-                  value={formData.username}
-                  type="text"
-                  id="username"
-                  name="username"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="Enter username"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="password" className="block text-gray-700">
-                  Password
-                </label>
-                <input
-                  value={formData.password}
-                  onChange={handleFormChange}
-                  type="password"
-                  id="password"
-                  name="password"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="Enter password"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="role" className="block text-gray-700">
-                  Role
-                </label>
-                <select
-                  value={formData.role}
-                  onChange={handleFormChange}
-                  id="role"
-                  name="role"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                >
-                  <option value="cashier">Cashier</option>
-                  <option value="manager">Manager</option>
-                </select>
-              </div>
-            </div>
-          }
-          footerContent={
-            <Button
-              type="button"
-              label={"Next"}
-              className="tw-h-[45px]"
-              variant="dark_hover"
-              onClick={handleSubmit}
-              isLoading={showSpinner}
-            />
-          }
+      <Modal
+        isModalOpen={showAddNewUSerModal}
+        onModalClose={closeAddNewUserModal}
+      >
+        <NewUser
+          setShowAddNewUSerModal={setShowAddNewUSerModal}
+          setSubUsers={setSubUsers}
         />
-      )}
-      {showEditModal && (
-        <Modal
-          show={showEditModal}
-          onClose={() => setShowEditModal(false)}
-          heading="Update User"
-          size="md"
-          content={
-            <div>
-              <div className="mb-4">
-                <label htmlFor="username" className="block text-gray-700">
-                  Username
-                </label>
-                <input
-                  onChange={handleEditFormChange}
-                  value={editUser.username}
-                  type="text"
-                  id="username"
-                  name="username"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="Enter username"
-                />
-              </div>
-
-              <div className="mb-4">
-                <label htmlFor="role" className="block text-gray-700">
-                  Role
-                </label>
-                <select
-                  value={editUser.role}
-                  onChange={handleEditFormChange}
-                  id="role"
-                  name="role"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                >
-                  <option value="cashier">Cashier</option>
-                  <option value="manager">Manager</option>
-                </select>
-              </div>
-            </div>
-          }
-          footerContent={
-            <Button
-              type="button"
-              label={"Update"}
-              className="tw-h-[45px]"
-              variant="dark_hover"
-              onClick={handleUpdateUser}
-              isLoading={showSpinner}
-            />
-          }
+      </Modal>
+      <Modal isModalOpen={showEditUSerModal} onModalClose={closeEditUserModal}>
+        <EditUser
+          selectedUserId={selectedUserId}
+          setSubUsers={setSubUsers}
+          subUsers={subUsers}
+          setShowEditUSerModal={setShowEditUSerModal}
         />
-      )}
+      </Modal>
     </div>
   );
 }
