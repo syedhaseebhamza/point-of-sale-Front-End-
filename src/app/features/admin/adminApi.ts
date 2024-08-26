@@ -21,7 +21,7 @@ export const createNewUser = async (data: {
 export const getAllSubUser = async () => {
   try {
     const response = await makeApiCall<any>({
-      url: "user/subuser",
+      url: "user/alluser",
       method: "GET",
     });
     return response.users;
