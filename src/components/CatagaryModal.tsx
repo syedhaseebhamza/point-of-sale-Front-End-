@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Input from "./common/inputField ";
+import Input from "./common/inputField";
 import Button from "./common/button";
 import { handelAddCatagory } from "@/app/features/catagory/catagoryApi";
 

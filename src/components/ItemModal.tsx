@@ -1,5 +1,5 @@
 import React from "react";
-import Input from "./common/inputField ";
+import Input from "./common/inputField";
 
 function ItemModal() {
   return (

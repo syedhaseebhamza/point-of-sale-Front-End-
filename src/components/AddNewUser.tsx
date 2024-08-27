@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Input from "./common/inputField ";
+import Input from "./common/inputField";
 import { useAppDispatch } from "@/app/hooks";
 import { createUser } from "@/app/features/admin/adminSlice";
 import Button from "./common/button";
