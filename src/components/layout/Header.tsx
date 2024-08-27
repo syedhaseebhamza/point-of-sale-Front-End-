@@ -18,7 +18,7 @@ const Header: FC<HeaderProps> = ({ sidebarWidth, setSidebarWidth }) => {
           "url('https://beyondtype1.org/wp-content/uploads/2023/01/FAST-FOOD-CHAIN-NUTRITION-GUIDE-HEADER.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
-        filter: "blur(1.8px)",
+        // filter: "blur(1.8px)",
       }}
       className="bg-cover bg-center  h-24 flex items-center justify-between p-8"
     >

@@ -5,6 +5,7 @@ interface AuthState {
   user: {
     id: string;
     username: string;
+    role: string;
   } | null;
   token: string | null;
   status: "idle" | "loading" | "failed";
@@ -23,7 +24,6 @@ export const login = createAsyncThunk<
   { username: string; password: string }
 >("auth/login", async (credentials: { username: string; password: string }) => {
   const responce = await loginUser(credentials);
-  console.log("API Response:", responce);
   return responce;
 });
 
@@ -44,14 +44,17 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action: PayloadAction<AuthState>) => {
+
         state.status = "idle";
         state.token = action.payload.token;
         state.user = action.payload.user;
+
         if (state.token) {
           localStorage.setItem("token", state.token);
         }
         if (state.user) {
           localStorage.setItem("username", state.user.username);
+          localStorage.setItem("role", state.user.role);
         }
       })
       .addCase(login.rejected, (state, action) => {
