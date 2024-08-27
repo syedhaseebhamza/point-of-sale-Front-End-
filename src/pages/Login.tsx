@@ -26,7 +26,7 @@ function Login() {
       navigate("/user", { replace: true });
       window.location.href = "/user";
     } catch (error: any) {
-      console.log(error);
+      console.error(error);
     }
   };
   return (

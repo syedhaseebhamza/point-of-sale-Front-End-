@@ -1,6 +1,9 @@
 import Layout from "@/components/layout";
+import Catagary from "@/pages/Catagary";
 import Counter from "@/pages/Counter";
+import Deals from "@/pages/Deals";
 import Home from "@/pages/Home";
+import Items from "@/pages/Items";
 import Login from "@/pages/Login";
 import Menu from "@/pages/Menu";
 import RolePermission from "@/pages/RolePermission";
@@ -37,6 +40,18 @@ export const nonAuthRoutes = Router([
       {
         path: "/rolepermission",
         element: <RolePermission />,
+      },
+      {
+        path: "/catagary",
+        element: <Catagary />,
+      },
+      {
+        path: "/item",
+        element: <Items />,
+      },
+      {
+        path: "/deals",
+        element: <Deals />,
       },
       {
         path: "/menu",
