@@ -10,7 +10,6 @@ export const loginUser = async (credentials: {
       method: "POST",
       data: credentials,
     });
-    console.log("loginUser Response:", response);
     return response;
   } catch (error) {
     throw new Error("Login Faild");
