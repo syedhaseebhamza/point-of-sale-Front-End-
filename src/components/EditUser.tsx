@@ -54,7 +54,7 @@ function EditUser({
           )
         );
       } catch (error) {
-        console.log("edit error", error);
+        console.error("edit error", error);
       } finally {
         setShowSpinner(false);
         setShowEditUSerModal(false);

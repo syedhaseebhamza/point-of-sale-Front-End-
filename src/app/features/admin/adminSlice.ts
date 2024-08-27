@@ -25,7 +25,6 @@ export const createUser = createAsyncThunk<
   async (data: { username: string; password: string; role: string }) => {
     try {
       const response = await createNewUser(data);
-      console.log("respoce in slice ", response);
 
       return response;
     } catch (error) {

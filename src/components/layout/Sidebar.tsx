@@ -5,6 +5,9 @@ import { NavLink } from "react-router-dom";
 const sideBarMenu = [
   { menuName: "User Management", path: "/user" },
   { menuName: "Role Permission", path: "/rolepermission" },
+  { menuName: "Catagary", path: "/catagary" },
+  { menuName: "Item", path: "/item" },
+  { menuName: "Deals", path: "/deals" },
   { menuName: "Menu", path: "/menu" },
 ];
 

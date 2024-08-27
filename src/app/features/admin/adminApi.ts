@@ -11,7 +11,6 @@ export const createNewUser = async (data: {
       method: "POST",
       data: data,
     });
-    console.log("Create New User Response:", response);
     return response;
   } catch (error) {
     throw new Error("Faild To Create New User");
