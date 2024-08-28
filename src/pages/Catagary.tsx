@@ -52,6 +52,9 @@ function Catagary() {
                 Name
               </th>
               <th className="py-3 px-4 border-b border-gray-300 text-left text-sm font-semibold text-gray-700">
+                Image
+              </th>
+              <th className="py-3 px-4 border-b border-gray-300 text-left text-sm font-semibold text-gray-700">
                 Catagory
               </th>
               <th className="py-3 px-4 border-b border-gray-300 text-left text-sm font-semibold text-gray-700">
@@ -63,16 +66,23 @@ function Catagary() {
             </tr>
           </thead>
           <tbody>
-            {allCatagory.map((item: any) => (
+            {allCatagory?.map((item: any) => (
               <tr key={item._id}>
                 <td className="py-2 px-4 border-b border-gray-300">
-                  {item.name}
+                  {item?.name}
                 </td>
                 <td className="py-2 px-4 border-b border-gray-300">
-                  {item.category}
+                  <img
+                    className="border object-cover rounded-full h-20 w-20"
+                    src={item?.image}
+                    alt="img"
+                  />
                 </td>
                 <td className="py-2 px-4 border-b border-gray-300">
-                  {item.description}
+                  {item?.category}
+                </td>
+                <td className="py-2 px-4 border-b border-gray-300">
+                  {item?.description}
                 </td>
                 <td className="py-2 px-4 border-b border-gray-300">
                   <div className="flex items-center gap-[20px]">
