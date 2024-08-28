@@ -3,7 +3,7 @@ import { makeApiCall } from "@/app/mixinApi/api";
 export const getAllCatagory = async () => {
   try {
     const response = await makeApiCall<any>({
-      url: "api/allcategory",
+      url: "api/all/category",
       method: "GET",
     });
     return response.categories;

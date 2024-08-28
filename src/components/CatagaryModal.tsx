@@ -53,13 +53,20 @@ function CatagaryModal({ closeCatagaryModal, onCategoryAdded }: any) {
       <div className="flex flex-col justify-between ">
         {" "}
         <div className="grid grid-cols-2 gap-x-4 gap-y-4">
-          <Input onChange={handleCategoryFormChange} name="name" label="Name" />
+          <Input
+            placeholder="Name"
+            onChange={handleCategoryFormChange}
+            name="name"
+            label="Name"
+          />
           <Input
             onChange={handleCategoryFormChange}
             name="category"
             label="Catagary"
+            placeholder="Catagary"
           />
           <Input
+            placeholder="Description"
             onChange={handleCategoryFormChange}
             name="description"
             label="Description"
