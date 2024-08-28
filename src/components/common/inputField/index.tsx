@@ -1,6 +1,7 @@
 import React, { ChangeEvent } from "react";
 
 interface CommonInputProps {
+  disabled?: boolean;
   name?: string;
   value?: string;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -15,6 +16,7 @@ interface CommonInputProps {
 }
 
 const Input = ({
+  disabled,
   name,
   value,
   onChange,
@@ -41,6 +43,7 @@ const Input = ({
         name={name}
         type={type}
         id={id}
+        disabled={disabled}
         onPaste={onPaste}
         value={value}
         onChange={onChange}
