@@ -9,7 +9,7 @@ import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 function Items() {
   const [showItemModal, setShowItemModal] = useState(false);
   const [catagory, setCatagory] = useState([]);
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState<any>([]);
   const openItemModal = () => setShowItemModal(true);
   const closeItemModal = () => setShowItemModal(false);
   useEffect(() => {
@@ -36,6 +36,10 @@ function Items() {
 
     fetchItems();
   }, []);
+
+  const handelAddItem = (newItem: any) => {
+    setItems((prevItem: any) => [...prevItem, newItem]);
+  };
 
   return (
     <div>
@@ -111,7 +115,11 @@ function Items() {
         </table>
       </div>
       <Modal onModalClose={closeItemModal} isModalOpen={showItemModal}>
-        <ItemModal catagory={catagory} />
+        <ItemModal
+          closeItemModal={closeItemModal}
+          catagory={catagory}
+          onItemAdded={handelAddItem}
+        />
       </Modal>
     </div>
   );
