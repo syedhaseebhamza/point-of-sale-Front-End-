@@ -73,7 +73,7 @@ function Login() {
                   value={credentials.password}
                   onChange={handelCredentialsChange}
                   name="password"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? "password" : "text"}
                   required
                   className="w-full text-sm text-gray-800 bg-gray-100 focus:bg-transparent px-4 py-3.5 rounded-md outline-blue-600"
                   placeholder="Enter password"
