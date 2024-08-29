@@ -26,3 +26,15 @@ export const handelAddNewItem = async (data: any, categoryId: any) => {
     throw new Error("Failed to add fetch Item");
   }
 };
+
+export const handelDeleteItem = async (id: any) => {
+  try {
+    const responce = await makeApiCall<any>({
+      url: `api/delete/item/${id}`,
+      method: "DELETE",
+    });
+    return responce;
+  } catch (error) {
+    throw new Error("Failed to delete item");
+  }
+};

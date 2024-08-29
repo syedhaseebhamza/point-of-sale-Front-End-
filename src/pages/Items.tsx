@@ -3,7 +3,7 @@ import Button from "@/components/common/button";
 import Modal from "@/components/common/modal/modal";
 import React, { useEffect, useState } from "react";
 import { getAllCatagory } from "@/app/features/catagory/catagoryApi";
-import { getAllItem } from "@/app/features/Item/itemApi";
+import { getAllItem, handelDeleteItem } from "@/app/features/Item/itemApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 const headers = [
@@ -54,7 +54,12 @@ function Items() {
   const handelAddItem = (newItem: any) => {
     setItems((prevItem: any) => [...prevItem, newItem]);
   };
-
+  const handelDeleteUser = (id: any) => {
+    handelDeleteItem(id).then((res) => {
+      const filterItem = items.filter((item: any) => item._id !== id);
+      setItems(filterItem);
+    });
+  };
   return (
     <div>
       <Button variant="secondary" onClick={openItemModal} label="Add Item" />
@@ -96,8 +101,8 @@ function Items() {
                     <FontAwesomeIcon
                       className="cursor-pointer"
                       icon={action.icon}
-                      // onClick={() => handleAction(item._id, action.action)}
-                    />
+                      onClick={() => handelDeleteUser(item._id)}
+                      />
                   </span>
                 ))}
               </div>
