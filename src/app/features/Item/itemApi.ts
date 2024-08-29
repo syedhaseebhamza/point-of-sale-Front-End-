@@ -8,6 +8,21 @@ export const getAllItem = async () => {
     });
     return response.items;
   } catch (error) {
-    throw new Error("Failed to fetch catagory");
+    throw new Error("Failed to fetch Item");
+  }
+};
+
+export const handelAddNewItem = async (data: any, categoryId: any) => {
+  const params = categoryId ? { categoryId } : {};
+  try {
+    const response = await makeApiCall<any>({
+      url: `api/create/item/`,
+      method: "POST",
+      data,
+      params,
+    });
+    return response;
+  } catch (error) {
+    throw new Error("Failed to add fetch Item");
   }
 };

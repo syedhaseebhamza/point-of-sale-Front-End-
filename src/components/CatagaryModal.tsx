@@ -2,11 +2,11 @@ import React, { useState, ChangeEvent } from "react";
 import Input from "./common/inputField";
 import Button from "./common/button";
 import { handelAddCatagory } from "@/app/features/catagory/catagoryApi";
+import { PlusIcon } from "./ui-icons";
 
 function CatagaryModal({ closeCatagaryModal, onCategoryAdded }: any) {
   const [categoryValues, setCategoryValues] = useState({
     name: "",
-    category: "",
     description: "",
   });
   const [campaignPicture, setCampaignPicture] = useState<File | null>(null);
@@ -23,7 +23,6 @@ function CatagaryModal({ closeCatagaryModal, onCategoryAdded }: any) {
   const handleSubmit = async () => {
     const formData = new FormData();
     formData.append("name", categoryValues.name);
-    formData.append("category", categoryValues.category);
     formData.append("description", categoryValues.description);
 
     if (campaignPicture) {
@@ -60,12 +59,6 @@ function CatagaryModal({ closeCatagaryModal, onCategoryAdded }: any) {
             label="Name"
           />
           <Input
-            onChange={handleCategoryFormChange}
-            name="category"
-            label="Catagary"
-            placeholder="Catagary"
-          />
-          <Input
             placeholder="Description"
             onChange={handleCategoryFormChange}
             name="description"
@@ -91,11 +84,11 @@ function CatagaryModal({ closeCatagaryModal, onCategoryAdded }: any) {
               </div>
             ) : (
               <label
-                className="flex mt-[10px] justify-center rounded-[8px] items-center cursor-pointer bg-[#E8E8E8] w-[60px] h-[60px]"
+                className="flex mt-[10px] justify-center rounded-full items-center cursor-pointer bg-[#E8E8E8] w-[60px] h-[60px]"
                 htmlFor="campaignPicture"
               >
-                <div className="flex justify-center border-2 min-h-[40px] max-h-[40px] min-w-[40px] max-w-[40px] border-[gray] items-center text-[40px]">
-                  +
+                <div className="flex justify-center rounded-full  min-h-[40px] max-h-[40px] min-w-[40px] max-w-[40px] border-[gray] items-center text-[40px]">
+                  <PlusIcon />
                 </div>
               </label>
             )}

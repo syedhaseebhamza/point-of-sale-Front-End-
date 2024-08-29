@@ -1,23 +1,82 @@
 import React, { useState } from "react";
 import Input from "./common/inputField";
 import Button from "./common/button";
+import { handelAddNewItem } from "@/app/features/Item/itemApi";
+import { PlusIcon } from "./ui-icons";
 
-function ItemModal({ catagory }: any) {
+function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
   const [selectedValue, setSelectedValue] = useState("");
+  const [selectedCatagoryId, setSelectedCatagoryId] = useState("");
+  const [variants, setVariants] = useState([{ size: "", price: "" }]);
+  const [formValues, setFormValues] = useState({
+    categoryName: selectedValue,
+    name: "",
+    retailPrice: "",
+  });
   const [isOpen, setIsOpen] = useState(false);
   const toggleDropdown = () => {
     setIsOpen((prev) => !prev);
   };
-  const handleSelectValue = (value: string) => {
-    setSelectedValue(`${value}`);
+  const handleSelectValue = (value: string, id: any) => {
+    setSelectedCatagoryId(id);
+    setSelectedValue(value);
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      categoryName: value,
+    }));
     setIsOpen(false);
   };
+
+  const handelItemFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormValues({
+      ...formValues,
+      [name]: value,
+    });
+  };
+
+  const handleVariantChange = (
+    index: number,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value } = e.target;
+    const newVariants = [...variants];
+    newVariants[index] = {
+      ...newVariants[index],
+      [name]: value,
+    };
+    setVariants(newVariants);
+  };
+
+  const handleAddVariant = () => {
+    setVariants([...variants, { size: "", price: "" }]);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const updatedFormValues = {
+        ...formValues,
+        categoryName: selectedValue,
+        variants,
+      };
+      const response = await handelAddNewItem(
+        updatedFormValues,
+        selectedCatagoryId
+      );
+      onItemAdded(response.newItem);
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      closeItemModal();
+    }
+  };
+
   return (
     <div>
-      <div className="max-h-[400px] h-[400px] lg:w-[400px] lg:max-w-[400px] 2xl:w-[800px] 2xl:max-w-[800px] bg-white px-16 pt-20 pb-[25rem]">
-        <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+      <div className="overflow-auto max-h-[400px] h-[400px] lg:w-[400px] lg:max-w-[400px] 2xl:w-[800px] 2xl:max-w-[800px] bg-white px-16 pt-20 pb-[25rem]">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-4 pb-[1rem]">
           <div>
-            <div className="text-[black] mb-2 text-[14px]">Category</div>
+            <div className="text-[black] mb-4 text-[14px]">Category</div>
             <button
               type="button"
               onClick={toggleDropdown}
@@ -45,7 +104,7 @@ function ItemModal({ catagory }: any) {
                   <a
                     key={option.id}
                     href="#"
-                    onClick={() => handleSelectValue(option.name)}
+                    onClick={() => handleSelectValue(option.name, option._id)}
                     className="block px-4 py-2  text-gray-700 hover:bg-gray-100 active:bg-blue-100 cursor-pointer rounded-md"
                   >
                     {option.name}
@@ -54,17 +113,53 @@ function ItemModal({ catagory }: any) {
               </div>
             )}
           </div>
-          <Input placeholder="Reail Price" label="Reail Price" />
-
-          <Input placeholder="Sale Price" label="Sale Price" />
-
-          <Input placeholder="Discount" label="Discount" />
-
-          <Input placeholder="Size" label="Size" />
+          <Input
+            name="name"
+            placeholder="Name"
+            label="Name"
+            onChange={handelItemFormChange}
+          />
+          <Input
+            name="retailPrice"
+            placeholder="Reail Price"
+            label="Reail Price"
+            onChange={handelItemFormChange}
+          />
         </div>
-
+        <div className="flex flex-col border-t-2  pt-[1rem]">
+          <div className="text-[20px] font-medium ">Varients</div>
+          <div className="flex items-end justify-end">
+            <div
+              onClick={handleAddVariant}
+              className="cursor-pointer flex mt-[10px] justify-center rounded-full items-center  bg-[#E8E8E8] w-[60px] h-[60px]"
+            >
+              <PlusIcon />
+            </div>
+          </div>
+          {variants.map((variant, index) => (
+            <div
+              key={index}
+              className="grid grid-cols-2 gap-x-4 gap-y-4 pb-[1rem]"
+            >
+              <Input
+                name="size"
+                placeholder="Size"
+                label="Size"
+                value={variant.size}
+                onChange={(e) => handleVariantChange(index, e)}
+              />
+              <Input
+                name="price"
+                placeholder="Sale Price"
+                label="Sale Price"
+                value={variant.price}
+                onChange={(e) => handleVariantChange(index, e)}
+              />
+            </div>
+          ))}
+        </div>
         <div className="flex items-end justify-end ">
-          <Button label="Save" className="px-[4rem]" />
+          <Button onClick={handleSubmit} label="Save" className="px-[4rem]" />
         </div>
       </div>
     </div>
