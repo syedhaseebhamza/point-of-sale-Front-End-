@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import Input from "./common/inputField";
 import Button from "./common/button";
 import { handelAddNewItem } from "@/app/features/Item/itemApi";
+import { PlusIcon } from "./ui-icons";
 
 function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
   const [selectedValue, setSelectedValue] = useState("");
   const [selectedCatagoryId, setSelectedCatagoryId] = useState("");
+  const [variants, setVariants] = useState([{ size: "", price: "" }]);
   const [formValues, setFormValues] = useState({
     categoryName: selectedValue,
+    name: "",
     retailPrice: "",
-    salePrice: "",
-    discount: "",
-    size: "",
   });
   const [isOpen, setIsOpen] = useState(false);
   const toggleDropdown = () => {
@@ -35,11 +35,29 @@ function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
     });
   };
 
+  const handleVariantChange = (
+    index: number,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value } = e.target;
+    const newVariants = [...variants];
+    newVariants[index] = {
+      ...newVariants[index],
+      [name]: value,
+    };
+    setVariants(newVariants);
+  };
+
+  const handleAddVariant = () => {
+    setVariants([...variants, { size: "", price: "" }]);
+  };
+
   const handleSubmit = async () => {
     try {
       const updatedFormValues = {
         ...formValues,
         categoryName: selectedValue,
+        variants,
       };
       const response = await handelAddNewItem(
         updatedFormValues,
@@ -55,10 +73,10 @@ function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
 
   return (
     <div>
-      <div className="max-h-[400px] h-[400px] lg:w-[400px] lg:max-w-[400px] 2xl:w-[800px] 2xl:max-w-[800px] bg-white px-16 pt-20 pb-[25rem]">
-        <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+      <div className="overflow-auto max-h-[400px] h-[400px] lg:w-[400px] lg:max-w-[400px] 2xl:w-[800px] 2xl:max-w-[800px] bg-white px-16 pt-20 pb-[25rem]">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-4 pb-[1rem]">
           <div>
-            <div className="text-[black] mb-2 text-[14px]">Category</div>
+            <div className="text-[black] mb-4 text-[14px]">Category</div>
             <button
               type="button"
               onClick={toggleDropdown}
@@ -96,34 +114,50 @@ function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
             )}
           </div>
           <Input
+            name="name"
+            placeholder="Name"
+            label="Name"
+            onChange={handelItemFormChange}
+          />
+          <Input
             name="retailPrice"
             placeholder="Reail Price"
             label="Reail Price"
             onChange={handelItemFormChange}
           />
-
-          <Input
-            onChange={handelItemFormChange}
-            name="salePrice"
-            placeholder="Sale Price"
-            label="Sale Price"
-          />
-
-          <Input
-            onChange={handelItemFormChange}
-            name="discount"
-            placeholder="Discount"
-            label="Discount"
-          />
-
-          <Input
-            onChange={handelItemFormChange}
-            name="size"
-            placeholder="Size"
-            label="Size"
-          />
         </div>
-
+        <div className="flex flex-col border-t-2  pt-[1rem]">
+          <div className="text-[20px] font-medium ">Varients</div>
+          <div className="flex items-end justify-end">
+            <div
+              onClick={handleAddVariant}
+              className="cursor-pointer flex mt-[10px] justify-center rounded-full items-center  bg-[#E8E8E8] w-[60px] h-[60px]"
+            >
+              <PlusIcon />
+            </div>
+          </div>
+          {variants.map((variant, index) => (
+            <div
+              key={index}
+              className="grid grid-cols-2 gap-x-4 gap-y-4 pb-[1rem]"
+            >
+              <Input
+                name="size"
+                placeholder="Size"
+                label="Size"
+                value={variant.size}
+                onChange={(e) => handleVariantChange(index, e)}
+              />
+              <Input
+                name="price"
+                placeholder="Sale Price"
+                label="Sale Price"
+                value={variant.price}
+                onChange={(e) => handleVariantChange(index, e)}
+              />
+            </div>
+          ))}
+        </div>
         <div className="flex items-end justify-end ">
           <Button onClick={handleSubmit} label="Save" className="px-[4rem]" />
         </div>

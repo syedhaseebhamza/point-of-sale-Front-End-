@@ -55,9 +55,6 @@ function Catagary() {
                 Image
               </th>
               <th className="py-3 px-4 border-b border-gray-300 text-left text-sm font-semibold text-gray-700">
-                Catagory
-              </th>
-              <th className="py-3 px-4 border-b border-gray-300 text-left text-sm font-semibold text-gray-700">
                 Descriotion
               </th>
               <th className="py-3 px-4 border-b border-gray-300 text-left text-sm font-semibold text-gray-700">
@@ -77,9 +74,6 @@ function Catagary() {
                     src={item?.image}
                     alt="img"
                   />
-                </td>
-                <td className="py-2 px-4 border-b border-gray-300">
-                  {item?.category}
                 </td>
                 <td className="py-2 px-4 border-b border-gray-300">
                   {item?.description}

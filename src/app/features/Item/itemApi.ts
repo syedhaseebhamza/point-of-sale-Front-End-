@@ -12,12 +12,14 @@ export const getAllItem = async () => {
   }
 };
 
-export const handelAddNewItem = async (data: any, id: any) => {
+export const handelAddNewItem = async (data: any, categoryId: any) => {
+  const params = categoryId ? { categoryId } : {};
   try {
     const response = await makeApiCall<any>({
-      url: `api/create/item/${id}`,
+      url: `api/create/item/`,
       method: "POST",
       data,
+      params,
     });
     return response;
   } catch (error) {
