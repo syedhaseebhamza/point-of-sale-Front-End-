@@ -6,6 +6,20 @@ import { getAllCatagory } from "@/app/features/catagory/catagoryApi";
 import { getAllItem } from "@/app/features/Item/itemApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+const headers = [
+  { label: "Category Name", key: "categoryName" },
+  { label: "Name", key: "name" },
+  { label: "Retail Price", key: "retailPrice" },
+  { label: "Size", key: "size" },
+  { label: "Sale Price", key: "salePrice" },
+  { label: "Actions", key: "actions" },
+];
+
+const actions = [
+  { icon: faEdit, action: "edit" },
+  { icon: faTrash, action: "delete" },
+];
+
 function Items() {
   const [showItemModal, setShowItemModal] = useState(false);
   const [catagory, setCatagory] = useState([]);
@@ -45,74 +59,51 @@ function Items() {
     <div>
       <Button variant="secondary" onClick={openItemModal} label="Add Item" />
       <div className="pt-[4rem]">
-        <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
-          <thead>
-            <tr>
-              <th className="py-3 px-4 border-b border-gray-300 text-left text-sm font-semibold text-gray-700">
-                Catagory Name
-              </th>
-
-              <th className="py-3 px-4 border-b border-gray-300 text-left text-sm font-semibold text-gray-700">
-                Reail Price
-              </th>
-              <th className="py-3 px-4 border-b border-gray-300 text-left text-sm font-semibold text-gray-700">
-                Sale Price
-              </th>
-              <th className="py-3 px-4 border-b border-gray-300 text-left text-sm font-semibold text-gray-700">
-                Discount
-              </th>
-              <th className="py-3 px-4 border-b border-gray-300 text-left text-sm font-semibold text-gray-700">
-                Size
-              </th>
-              <th className="py-3 px-4 border-b border-gray-300 text-left text-sm font-semibold text-gray-700">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {items?.map((item: any) => (
-              <tr key={item._id}>
-                <td className="py-2 px-4 border-b border-gray-300">
-                  {item?.categoryName}
-                </td>
-
-                <td className="py-2 px-4 border-b border-gray-300">
-                  {item?.retailPrice} Rs
-                </td>
-                <td className="py-2 px-4 border-b border-gray-300">
-                  {item?.salePrice} Rs
-                </td>
-                <td className="py-2 px-4 border-b border-gray-300">
-                  {item?.discount} Rs
-                </td>
-                <td className="py-2 px-4 border-b border-gray-300">
-                  {item?.size}
-                </td>
-                <td className="py-2 px-4 border-b border-gray-300">
-                  <div className="flex items-center gap-[20px]">
-                    <span>
-                      <FontAwesomeIcon
-                        className="cursor-pointer"
-                        icon={faEdit}
-                        // onClick={() => {
-                        //   setSelectedUserId(user._id);
-                        //   setShowEditUSerModal(true);
-                        // }}
-                      />
-                    </span>
-                    <span>
-                      <FontAwesomeIcon
-                        className="cursor-pointer"
-                        icon={faTrash}
-                        // onClick={() => handelDeleteUser(item._id)}
-                      />
-                    </span>
-                  </div>
-                </td>
-              </tr>
+        <div className="bg-white border border-gray-300 rounded-lg shadow-md">
+          {/* Header */}
+          <div className="border-b border-gray-300 p-4 flex justify-between font-semibold text-gray-700">
+            {headers.map((header) => (
+              <div key={header.key} className="w-1/6">
+                {header.label}
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+
+          {/* Records */}
+          {items?.map((item: any) => (
+            <div
+              key={item._id}
+              className="border-b border-gray-300 p-4 flex flex-col md:flex-row justify-between items-start md:items-center"
+            >
+              {headers.slice(0, -1).map((header) => (
+                <div key={header.key} className="w-1/6 text-gray-700">
+                  {header.key === "size" ? (
+                    <div>
+                      {item.variants.map((variant: any) => (
+                        <div key={variant._id}>
+                          {variant.size} , {variant.price} (Rs)
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    item[header.key] || ""
+                  )}
+                </div>
+              ))}
+              <div className="w-1/6 flex items-center gap-4">
+                {actions.map((action) => (
+                  <span key={action.action}>
+                    <FontAwesomeIcon
+                      className="cursor-pointer"
+                      icon={action.icon}
+                      // onClick={() => handleAction(item._id, action.action)}
+                    />
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
       <Modal onModalClose={closeItemModal} isModalOpen={showItemModal}>
         <ItemModal
