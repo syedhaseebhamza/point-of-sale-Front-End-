@@ -8,16 +8,22 @@ import {
 } from "@/app/features/catagory/catagoryApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import CatagaryEditModal from "@/components/CatagaryEditModal";
 function Catagary() {
   const [showCatagaryModal, setShowCatagaryModal] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [showCatagaryEditModal, setShowCatagaryEditModal] = useState(false);
   const [allCatagory, setAllCatagory] = useState<any>([]);
   const openCatagaryModal = () => setShowCatagaryModal(true);
   const closeCatagaryModal = () => setShowCatagaryModal(false);
+  const closeCatagaryEditModal = () => setShowCatagaryEditModal(false);
 
   useEffect(() => {
     const fetchCatagory = async () => {
       try {
         const response = await getAllCatagory();
+        console.log("respoce", response);
+
         setAllCatagory(response);
       } catch (error) {
         console.error("Failed to fetch categories", error);
@@ -30,6 +36,16 @@ function Catagary() {
   const handleNewCategory = (newCategory: any) => {
     setAllCatagory((prevCategories: any) => [...prevCategories, newCategory]);
   };
+
+  const handleCategoryUpdated = async () => {
+    try {
+      const response = await getAllCatagory();
+      setAllCatagory(response);
+    } catch (error) {
+      console.error("Failed to fetch updated categories", error);
+    }
+  };
+
   const handelDeleteUser = (id: any) => {
     handelDeleteCategory(id).then((res) => {
       const filterCategory = allCatagory.filter((item: any) => item._id !== id);
@@ -84,10 +100,10 @@ function Catagary() {
                       <FontAwesomeIcon
                         className="cursor-pointer"
                         icon={faEdit}
-                        // onClick={() => {
-                        //   setSelectedUserId(user._id);
-                        //   setShowEditUSerModal(true);
-                        // }}
+                        onClick={() => {
+                          setSelectedCategoryId(item._id);
+                          setShowCatagaryEditModal(true);
+                        }}
                       />
                     </span>
                     <span>
@@ -108,6 +124,17 @@ function Catagary() {
         <CatagaryModal
           closeCatagaryModal={closeCatagaryModal}
           onCategoryAdded={handleNewCategory}
+        />
+      </Modal>
+      <Modal
+        onModalClose={closeCatagaryEditModal}
+        isModalOpen={showCatagaryEditModal}
+      >
+        <CatagaryEditModal
+          selectedCategoryId={selectedCategoryId}
+          allCatagory={allCatagory}
+          closeCatagaryEditModal={closeCatagaryEditModal}
+          onCategoryUpdated={handleCategoryUpdated}
         />
       </Modal>
     </div>

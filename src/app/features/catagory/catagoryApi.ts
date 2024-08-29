@@ -36,3 +36,16 @@ export const handelDeleteCategory = async (id: any) => {
     throw new Error("Failed to delete catagory");
   }
 };
+
+export const handelUpdateCategory = async (data: any, id: any) => {
+  try {
+    const responce = await makeApiCall<any>({
+      url: `api/update/category/${id}`,
+      method: "PATCH",
+      data,
+    });
+    return responce;
+  } catch (error) {
+    throw new Error("Failed to update catagory");
+  }
+};
