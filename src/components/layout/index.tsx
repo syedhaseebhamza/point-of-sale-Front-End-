@@ -10,14 +10,14 @@ export default function Layout() {
     <div className="flex">
       <div
         className={`transition-all duration-300 ease-in-out ${
-          sidebarWidth ? "w-0 opacity-0" : "w-1/5"
-        } bg-[#646745f4] h-screen`}
+          sidebarWidth ? "w-0 opacity-0" : "w-1/6"
+        } bg-primary h-screen`}
       >
         <Sidebar />
       </div>
       <div
         className={`transition-all duration-300 ease-in-out ${
-          sidebarWidth ? "w-full" : "w-4/5"
+          sidebarWidth ? "w-full" : "w-5/6"
         }`}
       >
         <Header setSidebarWidth={setSidebarWidth} sidebarWidth={sidebarWidth} />

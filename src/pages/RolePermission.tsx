@@ -15,7 +15,7 @@ function RolePermission() {
     <div className="p-8">
       <div className="flex justify-end items-center gap-3">
         <h1 className="text-2xl font-bold mb-[0.5rem]">User Permission</h1>
-        <Button onClick={openPermissionModal} label="Add Permission" />
+        <Button variant="secondary" onClick={openPermissionModal} label="Add Permission" />
       </div>
       <Modal
         onModalClose={closePermissionModal}

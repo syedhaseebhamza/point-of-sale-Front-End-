@@ -40,7 +40,7 @@ function Catagary() {
   return (
     <div>
       <Button
-        variant="dark_hover"
+        variant="secondary"
         onClick={openCatagaryModal}
         label="Add Catagary"
       />

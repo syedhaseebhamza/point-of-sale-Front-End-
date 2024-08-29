@@ -51,7 +51,7 @@ function UserPage() {
           <h1 className="text-2xl font-bold mb-[0.5rem]">User Management</h1>
           <Button
             onClick={openAddNewUserModal}
-            variant="dark_hover"
+            variant="secondary"
             label="Add User"
           />
         </div>
@@ -114,6 +114,7 @@ function UserPage() {
         <NewUser
           setShowAddNewUSerModal={setShowAddNewUSerModal}
           setSubUsers={setSubUsers}
+          closeAddNewUserModal={closeAddNewUserModal}
         />
       </Modal>
       <Modal isModalOpen={showEditUSerModal} onModalClose={closeEditUserModal}>

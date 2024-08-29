@@ -5,7 +5,7 @@ type propType = {
   label?: string;
   variant?:
     | "primary"
-    | "light"
+    | "secondary"
     | "light_hover"
     | "dark"
     | "basic"
@@ -29,19 +29,10 @@ const Button: React.FC<propType> = ({
 }) => {
   let classList = ``;
   if (!variant || variant === "primary") {
-    classList = "bg-primary text-white hover:bg-[#ff6e58e1]";
-  } else if (variant === "dark") {
-    classList = "bg-secondary text-white hover:bg-[#272727]";
-  } else if (variant === "dark_hover") {
-    classList =
-      "bg-secondary border-secondary border text-white hover:bg-white hover:text-black";
-  } else if (variant === "light_hover") {
-    classList =
-      " text-primary border border-primary bg-primary hover:bg-white text-white hover:text-primary";
-  } else if (variant === "light") {
-    classList =
-      "text-primary border border-primary hover:bg-primary hover:text-white";
-  }
+    classList = "bg-primary text-black hover:bg-white hover:text-primary border hover:border-primary font-semibold text-[20px] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md py-2 px-4 ";
+  } else if (variant === "secondary") {
+    classList = "bg-secondary text-white hover:bg-white hover:text-secondary border hover:border-secondary font-semibold text-[20px] focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 rounded-md py-2 px-4";
+  } 
   function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     if (!props?.disabled && !isLoading && onClick) {
       onClick(e);

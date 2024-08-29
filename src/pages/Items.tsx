@@ -43,7 +43,7 @@ function Items() {
 
   return (
     <div>
-      <Button variant="dark_hover" onClick={openItemModal} label="Add Item" />
+      <Button variant="secondary" onClick={openItemModal} label="Add Item" />
       <div className="pt-[4rem]">
         <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
           <thead>

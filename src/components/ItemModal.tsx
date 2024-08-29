@@ -73,7 +73,7 @@ function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
 
   return (
     <div>
-      <div className="overflow-auto max-h-[400px] h-[400px] lg:w-[400px] lg:max-w-[400px] 2xl:w-[800px] 2xl:max-w-[800px] bg-white px-16 pt-20 pb-[25rem]">
+      <div className="overflow-auto max-h-[500px] w-[800px] bg-white px-16 py-16 ">
         <div className="grid grid-cols-2 gap-x-4 gap-y-4 pb-[1rem]">
           <div>
             <div className="text-[black] mb-4 text-[14px]">Category</div>
@@ -99,7 +99,7 @@ function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
             </button>
 
             {isOpen && (
-              <div className="absolute h-[7rem] overflow-auto  top-[10rem]   left-[4rem] mt-2 rounded-md shadow-lg bg-white ring-1 ring-black z-10 ring-opacity-5 p-1 space-y-1">
+              <div className="absolute h-[10rem] overflow-auto  top-[10rem] w-[328px]  left-[4rem] mt-2 rounded-md shadow-lg bg-white ring-1 ring-black z-10 ring-opacity-5 p-1 space-y-1">
                 {catagory?.map((option: any) => (
                   <a
                     key={option.id}

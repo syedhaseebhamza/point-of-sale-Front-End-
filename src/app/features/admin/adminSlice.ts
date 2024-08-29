@@ -7,6 +7,7 @@ interface userData {
   role: string | null;
   status: "idle" | "loading" | "failed";
   error: string | null;
+  message: string | null;
 }
 
 const initialState: userData = {
@@ -15,6 +16,7 @@ const initialState: userData = {
   role: null,
   status: "idle",
   error: null,
+  message: null,
 };
 
 export const createUser = createAsyncThunk<
@@ -50,6 +52,7 @@ const newUserSlice = createSlice({
           state.username = action.payload.username;
           state.password = action.payload.password;
           state.role = action.payload.role;
+          state.message = action.payload.message;
         }
       )
       .addCase(createUser.rejected, (state, action) => {
