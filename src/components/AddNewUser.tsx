@@ -4,13 +4,14 @@ import { useAppDispatch } from "@/app/hooks";
 import { createUser } from "@/app/features/admin/adminSlice";
 import Button from "./common/button";
 import { getAllSubUser } from "@/app/features/admin/adminApi";
+import { log } from "console";
 
 const userRoleOptions = [
   { userRole: "Cashier", id: 1 },
   { userRole: "Manager", id: 2 },
 ];
 
-function NewUser({ setShowAddNewUSerModal, setSubUsers }: any) {
+function NewUser({ setShowAddNewUSerModal, setSubUsers,closeAddNewUserModal }: any) {
   const dispatch = useAppDispatch();
   const [selectedValue, setSelectedValue] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -44,15 +45,21 @@ function NewUser({ setShowAddNewUSerModal, setSubUsers }: any) {
   const handelSubmit = async () => {
     setShowSpinner(true);
     try {
-      dispatch(createUser(formData)).then((res) => {
+    await  dispatch(createUser(formData)).then((res) => {
+        if (res.payload === undefined){
+          return
+        }
+        
         getAllSubUser().then((res) => {
           setSubUsers(res);
         });
       });
+      closeAddNewUserModal();
       setShowSpinner(false);
     } catch (error) {
       setShowAddNewUSerModal(false);
       setShowSpinner(false);
+      closeAddNewUserModal();
     }
   };
 

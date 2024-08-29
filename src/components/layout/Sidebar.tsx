@@ -14,7 +14,6 @@ const sideBarMenu = [
 function Sidebar() {
   return (
     <div className="p-[1rem] ">
-      {/* <img src="/public/pizzeri.jpg" alt="no imag" /> */}
       <ul className="space-y-4">
         {sideBarMenu.map((menuItem) => (
           <li key={menuItem.path}>
@@ -22,7 +21,7 @@ function Sidebar() {
               to={menuItem.path}
               className={({ isActive }) =>
                 `block p-2 rounded text-center ${
-                  isActive ? "bg-gray-600 text-white" : "hover:bg-gray-700"
+                  isActive ? "bg-white text-black" : "hover:bg-[#FFF1CD]"
                 }`
               }
             >

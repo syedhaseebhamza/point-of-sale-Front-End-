@@ -48,8 +48,8 @@ function CatagaryModal({ closeCatagaryModal, onCategoryAdded }: any) {
   };
 
   return (
-    <div className="max-h-[400px] h-[400px] lg:w-[400px] lg:max-w-[400px] 2xl:w-[800px] 2xl:max-w-[800px] bg-white px-16 pt-20 pb-[25rem]">
-      <div className="flex flex-col justify-between ">
+    <div className="max-h-[400px] h-[400px] w-[800px] bg-white px-16 py-16 ">
+      <div className="flex flex-col justify-between h-[300px] ">
         {" "}
         <div className="grid grid-cols-2 gap-x-4 gap-y-4">
           <Input
@@ -73,9 +73,9 @@ function CatagaryModal({ closeCatagaryModal, onCategoryAdded }: any) {
               type="file"
             />
 
-            <div>upload image</div>
+            <div>Upload image</div>
             {imagePreview ? (
-              <div className="min-h-[40px] max-h-[40px] min-w-[40px] max-w-[40px] mt-[13px]">
+              <div className="flex justify-center items-center min-h-[60px] max-h-[60px] min-w-[60px] max-w-[60px] mt-[13px] border border-[gray] rounded-full">
                 <img
                   src={imagePreview}
                   alt="Selected"
