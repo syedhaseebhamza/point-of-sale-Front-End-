@@ -6,6 +6,7 @@ import { getAllCatagory } from "@/app/features/catagory/catagoryApi";
 import { getAllItem, handelDeleteItem } from "@/app/features/Item/itemApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import ItemEditModal from "@/components/ItemEditModal";
 const headers = [
   { label: "Category Name", key: "categoryName" },
   { label: "Name", key: "name" },
@@ -22,15 +23,20 @@ const actions = [
 
 function Items() {
   const [showItemModal, setShowItemModal] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState("");
+  const [showItemEditModal, setShowItemEditModal] = useState(false);
+
   const [catagory, setCatagory] = useState([]);
   const [items, setItems] = useState<any>([]);
   const openItemModal = () => setShowItemModal(true);
   const closeItemModal = () => setShowItemModal(false);
+  const closeItemEditModal = () => setShowItemEditModal(false);
   useEffect(() => {
     const fetchCatagory = async () => {
       try {
         const response = await getAllCatagory();
         setCatagory(response);
+        console.log("response", response);
       } catch (error) {
         console.error("Failed to fetch categories", error);
       }
@@ -51,6 +57,15 @@ function Items() {
     fetchItems();
   }, []);
 
+  const handelUpdateItem = async () => {
+    try {
+      const responce = await getAllItem();
+      setItems(responce);
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+    }
+  };
+
   const handelAddItem = (newItem: any) => {
     setItems((prevItem: any) => [...prevItem, newItem]);
   };
@@ -65,7 +80,6 @@ function Items() {
       <Button variant="secondary" onClick={openItemModal} label="Add Item" />
       <div className="pt-[4rem]">
         <div className="bg-white border border-gray-300 rounded-lg shadow-md">
-          {/* Header */}
           <div className="border-b border-gray-300 p-4 flex justify-between font-semibold text-gray-700">
             {headers.map((header) => (
               <div key={header.key} className="w-1/6">
@@ -73,20 +87,18 @@ function Items() {
               </div>
             ))}
           </div>
-
-          {/* Records */}
           {items?.map((item: any) => (
             <div
               key={item._id}
               className="border-b border-gray-300 p-4 flex flex-col md:flex-row justify-between items-start md:items-center"
             >
-              {headers.slice(0, -1).map((header) => (
+              {headers?.slice(0, -1)?.map((header) => (
                 <div key={header.key} className="w-1/6 text-gray-700">
                   {header.key === "size" ? (
                     <div>
                       {item.variants.map((variant: any) => (
                         <div key={variant._id}>
-                          {variant.size} , {variant.price} (Rs)
+                          {variant?.size} , {variant?.price} (Rs)
                         </div>
                       ))}
                     </div>
@@ -96,15 +108,28 @@ function Items() {
                 </div>
               ))}
               <div className="w-1/6 flex items-center gap-4">
-                {actions.map((action) => (
-                  <span key={action.action}>
-                    <FontAwesomeIcon
-                      className="cursor-pointer"
-                      icon={action.icon}
-                      onClick={() => handelDeleteUser(item._id)}
+                {actions.map((action) =>
+                  action.action === "edit" ? (
+                    <span key={action.action}>
+                      <FontAwesomeIcon
+                        className="cursor-pointer"
+                        icon={action.icon}
+                        onClick={() => {
+                          setSelectedItemId(item._id);
+                          setShowItemEditModal(true);
+                        }}
                       />
-                  </span>
-                ))}
+                    </span>
+                  ) : (
+                    <span key={action.action}>
+                      <FontAwesomeIcon
+                        className="cursor-pointer"
+                        icon={action.icon}
+                        onClick={() => handelDeleteUser(item._id)}
+                      />
+                    </span>
+                  )
+                )}
               </div>
             </div>
           ))}
@@ -115,6 +140,15 @@ function Items() {
           closeItemModal={closeItemModal}
           catagory={catagory}
           onItemAdded={handelAddItem}
+        />
+      </Modal>
+      <Modal onModalClose={closeItemEditModal} isModalOpen={showItemEditModal}>
+        <ItemEditModal
+          catagory={catagory}
+          closeItemEditModal={closeItemEditModal}
+          selectedItemId={selectedItemId}
+          items={items}
+          onItemUpdated={handelUpdateItem}
         />
       </Modal>
     </div>
