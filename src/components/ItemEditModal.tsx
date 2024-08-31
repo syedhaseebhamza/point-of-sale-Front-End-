@@ -1,29 +1,46 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Input from "./common/inputField";
 import Button from "./common/button";
-import { handelAddNewItem } from "@/app/features/Item/itemApi";
 import { MinusIcon, PlusIcon } from "./ui-icons";
+import { handelUpdateItem } from "@/app/features/Item/itemApi";
 
-function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
-  const [selectedValue, setSelectedValue] = useState("");
-  const [selectedCatagoryId, setSelectedCatagoryId] = useState("");
-  const [variants, setVariants] = useState([{ size: "", price: "" }]);
-  const [formValues, setFormValues] = useState({
-    categoryName: selectedValue,
-    name: "",
-    retailPrice: "",
-  });
+function ItemEditModal({
+  catagory,
+  closeItemEditModal,
+  selectedItemId,
+  items,
+  onItemUpdated,
+}: any) {
+  const selectedItemValues = items.find(
+    (item: any) => item._id === selectedItemId
+  );
+
+  const [variants, setVariants] = useState(
+    selectedItemValues.variants || [{ size: "", price: "" }]
+  );
+
+  const [selectedValue, setSelectedValue] = useState(
+    selectedItemValues.categoryName || ""
+  );
+
   const [isOpen, setIsOpen] = useState(false);
+
+  const [formValues, setFormValues] = useState({
+    categoryName: selectedItemValues?.categoryName || selectedValue,
+    name: selectedItemValues?.name || "",
+    retailPrice: selectedItemValues?.retailPrice || "",
+  });
+
   const toggleDropdown = () => {
     setIsOpen((prev) => !prev);
   };
-  const handleSelectValue = (value: string, id: any) => {
-    setSelectedCatagoryId(id);
+
+  const handleSelectValue = (value: string) => {
     setSelectedValue(value);
-    setFormValues((prevValues) => ({
-      ...prevValues,
-      categoryName: value,
-    }));
+    // setFormValues((prevValues) => ({
+    //   ...prevValues,
+    //   categoryName: value,
+    // }));
     setIsOpen(false);
   };
 
@@ -33,6 +50,15 @@ function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
       ...formValues,
       [name]: value,
     });
+  };
+
+  const handleAddVariant = () => {
+    setVariants([...variants, { size: "", price: "" }]);
+  };
+
+  const handleRemoveVariant = (index: number) => {
+    const newVariants = variants.filter((_: any, i: number) => i !== index);
+    setVariants(newVariants);
   };
 
   const handleVariantChange = (
@@ -48,38 +74,32 @@ function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
     setVariants(newVariants);
   };
 
-  const handleAddVariant = () => {
-    setVariants([...variants, { size: "", price: "" }]);
-  };
-  const handleRemoveVariant = (index: number) => {
-    const newVariants = variants.filter((_, i) => i !== index);
-    setVariants(newVariants);
-  };
-
   const handleSubmit = async () => {
+    const data = {
+      categoryName: formValues.categoryName,
+      name: formValues.name,
+      retailPrice: formValues.retailPrice,
+      variants: variants,
+    };
     try {
-      const updatedFormValues = {
-        ...formValues,
-        categoryName: selectedValue,
-        variants,
-      };
-      const response = await handelAddNewItem(
-        updatedFormValues,
-        selectedCatagoryId
-      );
-      if (response.message === "Item created successfully") {
-        onItemAdded(response.newItem);
-      } else {
-        onItemAdded(response.item);
-      }
-
-      console.log("response", response);
+      await handelUpdateItem(data, selectedItemId);
+      closeItemEditModal();
+      onItemUpdated();
     } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      closeItemModal();
+      console.error("Error updating item:", error);
     }
   };
+
+  useEffect(() => {
+    if (selectedItemValues) {
+      setFormValues({
+        categoryName: selectedItemValues.categoryName || "",
+        name: selectedItemValues.name || "",
+        retailPrice: selectedItemValues.retailPrice || "",
+      });
+      setVariants(selectedItemValues.variants || [{ size: "", price: "" }]);
+    }
+  }, [selectedItemId, selectedItemValues]);
 
   return (
     <div>
@@ -114,7 +134,7 @@ function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
                   <a
                     key={option._id}
                     href="#"
-                    onClick={() => handleSelectValue(option.name, option._id)}
+                    onClick={() => handleSelectValue(option.name)}
                     className="block px-4 py-2  text-gray-700 hover:bg-gray-100 active:bg-blue-100 cursor-pointer rounded-md"
                   >
                     {option.name}
@@ -124,12 +144,14 @@ function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
             )}
           </div>
           <Input
+            value={formValues.name}
             name="name"
             placeholder="Name"
             label="Name"
             onChange={handelItemFormChange}
           />
           <Input
+            value={formValues.retailPrice}
             name="retailPrice"
             placeholder="Reail Price"
             label="Reail Price"
@@ -146,7 +168,7 @@ function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
               <PlusIcon />
             </div>
           </div>
-          {variants.map((variant, index) => (
+          {variants.map((variant: any, index: number) => (
             <div
               key={index}
               className="grid grid-cols-2 gap-x-4 gap-y-4 pb-[1rem] relative"
@@ -182,4 +204,4 @@ function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
   );
 }
 
-export default ItemModal;
+export default ItemEditModal;
