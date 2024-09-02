@@ -1,5 +1,5 @@
 import Layout from "@/components/layout";
-import Catagary from "@/pages/Catagary";
+import Catagary from "@/pages/Category";
 import Counter from "@/pages/Counter";
 import Deals from "@/pages/Deals";
 import Home from "@/pages/Home";
@@ -42,7 +42,7 @@ export const nonAuthRoutes = Router([
         element: <RolePermission />,
       },
       {
-        path: "/catagary",
+        path: "/category",
         element: <Catagary />,
       },
       {
