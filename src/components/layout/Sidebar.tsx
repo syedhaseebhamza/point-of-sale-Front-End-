@@ -8,6 +8,8 @@ import {
   faUtensils,
   faTags,
   faBars,
+  faDollarSign,
+  faShoppingCart,
 } from "@fortawesome/free-solid-svg-icons";
 
 const sideBarMenu = [
@@ -16,6 +18,8 @@ const sideBarMenu = [
   { menuName: "Category", path: "/category", icon: faList },
   { menuName: "Item", path: "/item", icon: faUtensils },
   { menuName: "Deals", path: "/deals", icon: faTags },
+  { menuName: "Sales", path: "/sales", icon: faDollarSign },
+  { menuName: "Order", path: "/order", icon: faShoppingCart },
   { menuName: "Menu", path: "/menu", icon: faBars },
 ];
 

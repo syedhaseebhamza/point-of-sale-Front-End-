@@ -23,8 +23,6 @@ function Category() {
     const fetchCatagory = async () => {
       try {
         const response = await getAllCatagory();
-        console.log("respoce", response);
-
         setAllCatagory(response);
       } catch (error) {
         console.error("Failed to fetch categories", error);
@@ -62,49 +60,48 @@ function Category() {
         label="Add Catagary"
       />
       <div className="pt-[4rem]">
-  <div className="bg-white border border-gray-300 rounded-lg shadow-md">
-    {/* Header */}
-    <div className="grid grid-cols-4 py-3 px-4 border-b border-gray-300 text-sm font-semibold text-gray-700">
-      <span>Name</span>
-      <span>Image</span>
-      <span>Description</span>
-      <span>Actions</span>
-    </div>
-    {/* Data Rows */}
-    {allCatagory?.map((item: any) => (
-      <div
-        key={item._id}
-        className="grid grid-cols-4 items-center py-2 px-4 border-b border-gray-300"
-      >
-        <span>{item?.name}</span>
-        <div className="flex justify-start">
-          <img
-            className="border object-cover rounded-full h-20 w-20"
-            src={item?.image}
-            alt="img"
-          />
-        </div>
-        <span>{item?.description}</span>
-        <div className="flex items-center justify-start gap-4">
-          <FontAwesomeIcon
-            className="cursor-pointer"
-            icon={faEdit}
-            onClick={() => {
-              setSelectedCategoryId(item._id);
-              setShowCatagaryEditModal(true);
-            }}
-          />
-          <FontAwesomeIcon
-            className="cursor-pointer"
-            icon={faTrash}
-            onClick={() => handelDeleteUser(item._id)}
-          />
+        <div className="bg-white border border-gray-300 rounded-lg shadow-md">
+          {/* Header */}
+          <div className="grid grid-cols-4 py-3 px-4 border-b border-gray-300 text-sm font-semibold text-gray-700">
+            <span>Name</span>
+            <span>Image</span>
+            <span>Description</span>
+            <span>Actions</span>
+          </div>
+          {/* Data Rows */}
+          {allCatagory?.map((item: any) => (
+            <div
+              key={item._id}
+              className="grid grid-cols-4 items-center py-2 px-4 border-b border-gray-300"
+            >
+              <span>{item?.name}</span>
+              <div className="flex justify-start">
+                <img
+                  className="border object-cover rounded-full h-20 w-20"
+                  src={item?.image}
+                  alt="img"
+                />
+              </div>
+              <span>{item?.description}</span>
+              <div className="flex items-center justify-start gap-4">
+                <FontAwesomeIcon
+                  className="cursor-pointer"
+                  icon={faEdit}
+                  onClick={() => {
+                    setSelectedCategoryId(item._id);
+                    setShowCatagaryEditModal(true);
+                  }}
+                />
+                <FontAwesomeIcon
+                  className="cursor-pointer"
+                  icon={faTrash}
+                  onClick={() => handelDeleteUser(item._id)}
+                />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    ))}
-  </div>
-</div>
-
 
       <Modal onModalClose={closeCatagaryModal} isModalOpen={showCatagaryModal}>
         <CatagaryModal
