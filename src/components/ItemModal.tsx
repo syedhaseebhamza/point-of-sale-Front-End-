@@ -50,7 +50,9 @@ function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
 
   const handleAddVariant = () => {
     setVariants([...variants, { size: "", price: "" }]);
+    
   };
+  
   const handleRemoveVariant = (index: number) => {
     const newVariants = variants.filter((_, i) => i !== index);
     setVariants(newVariants);
@@ -165,12 +167,13 @@ function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
                 value={variant.price}
                 onChange={(e) => handleVariantChange(index, e)}
               />
+               {variants.length > 1 && (
               <div
                 onClick={() => handleRemoveVariant(index)}
                 className="absolute right-[-2.8rem]  top-[3rem] cursor-pointer"
               >
                 <MinusIcon />
-              </div>
+              </div> )}
             </div>
           ))}
         </div>

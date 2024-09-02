@@ -10,15 +10,15 @@ export function RoundedCross({ ...props }: Icon) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="42"
-      height="42"
+      width="32"
+      height="32"
       viewBox="0 0 42 42"
       fill="none"
       {...props}
     >
       <path
         d="M41.5095 21.2547C41.5095 32.7173 32.2173 42.0095 20.7547 42.0095C9.29221 42.0095 0 32.7173 0 21.2547C0 9.79221 9.29221 0.5 20.7547 0.5C32.2173 0.5 41.5095 9.79221 41.5095 21.2547Z"
-        fill="#404040"
+        fill="#FF0000"
         fillOpacity="0.88"
       />
       <path
