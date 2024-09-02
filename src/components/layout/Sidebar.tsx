@@ -1,31 +1,42 @@
-import Home from "@/pages/Home";
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUser,
+  faKey,
+  faList,
+  faUtensils,
+  faTags,
+  faBars,
+} from "@fortawesome/free-solid-svg-icons";
 
 const sideBarMenu = [
-  { menuName: "User Management", path: "/user" },
-  { menuName: "Role Permission", path: "/rolepermission" },
-  { menuName: "Catagary", path: "/catagary" },
-  { menuName: "Item", path: "/item" },
-  { menuName: "Deals", path: "/deals" },
-  { menuName: "Menu", path: "/menu" },
+  { menuName: "User Management", path: "/user", icon: faUser },
+  { menuName: "Role Permission", path: "/rolepermission", icon: faKey },
+  { menuName: "Category", path: "/category", icon: faList },
+  { menuName: "Item", path: "/item", icon: faUtensils },
+  { menuName: "Deals", path: "/deals", icon: faTags },
+  { menuName: "Menu", path: "/menu", icon: faBars },
 ];
 
 function Sidebar() {
   return (
-    <div className="p-[1rem] ">
+    <div className="p-8">
       <ul className="space-y-4">
         {sideBarMenu.map((menuItem) => (
           <li key={menuItem.path}>
             <NavLink
               to={menuItem.path}
               className={({ isActive }) =>
-                `block p-2 rounded text-center ${
+                `p-2 rounded flex gap-8 items-center${
                   isActive ? "bg-white text-black" : "hover:bg-[#FFF1CD]"
                 }`
               }
             >
-              {menuItem.menuName}
+              <div>
+                <FontAwesomeIcon icon={menuItem.icon} size="lg" />
+              </div>
+              <span className="flex-grow">{menuItem.menuName}</span>
             </NavLink>
           </li>
         ))}

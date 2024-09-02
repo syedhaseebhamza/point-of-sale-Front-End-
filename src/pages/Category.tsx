@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import CatagaryEditModal from "@/components/CatagaryEditModal";
 
-function Catagary() {
+function Category() {
   const [showCatagaryModal, setShowCatagaryModal] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [showCatagaryEditModal, setShowCatagaryEditModal] = useState(false);
@@ -62,50 +62,50 @@ function Catagary() {
         label="Add Catagary"
       />
       <div className="pt-[4rem]">
-        <div className="bg-white border border-gray-300 rounded-lg shadow-md">
-          <div className="flex justify-between py-3 px-4 border-b border-gray-300 text-sm font-semibold text-gray-700">
-            <span>Name</span>
-            <span>Image</span>
-            <span>Description</span>
-            <span>Actions</span>
-          </div>
-          {allCatagory?.map((item: any) => (
-            <div
-              key={item._id}
-              className="flex items-center justify-between py-2 px-4 border-b border-gray-300"
-            >
-              <span className="">{item?.name}</span>
-              <span className="">
-                <img
-                  className="border object-cover rounded-full h-20 w-20"
-                  src={item?.image}
-                  alt="img"
-                />
-              </span>
-              <span className="">{item?.description}</span>
-              <div className=" flex items-center gap-[20px]">
-                <span>
-                  <FontAwesomeIcon
-                    className="cursor-pointer"
-                    icon={faEdit}
-                    onClick={() => {
-                      setSelectedCategoryId(item._id);
-                      setShowCatagaryEditModal(true);
-                    }}
-                  />
-                </span>
-                <span>
-                  <FontAwesomeIcon
-                    className="cursor-pointer"
-                    icon={faTrash}
-                    onClick={() => handelDeleteUser(item._id)}
-                  />
-                </span>
-              </div>
-            </div>
-          ))}
+  <div className="bg-white border border-gray-300 rounded-lg shadow-md">
+    {/* Header */}
+    <div className="grid grid-cols-4 py-3 px-4 border-b border-gray-300 text-sm font-semibold text-gray-700">
+      <span>Name</span>
+      <span>Image</span>
+      <span>Description</span>
+      <span>Actions</span>
+    </div>
+    {/* Data Rows */}
+    {allCatagory?.map((item: any) => (
+      <div
+        key={item._id}
+        className="grid grid-cols-4 items-center py-2 px-4 border-b border-gray-300"
+      >
+        <span>{item?.name}</span>
+        <div className="flex justify-start">
+          <img
+            className="border object-cover rounded-full h-20 w-20"
+            src={item?.image}
+            alt="img"
+          />
+        </div>
+        <span>{item?.description}</span>
+        <div className="flex items-center justify-start gap-4">
+          <FontAwesomeIcon
+            className="cursor-pointer"
+            icon={faEdit}
+            onClick={() => {
+              setSelectedCategoryId(item._id);
+              setShowCatagaryEditModal(true);
+            }}
+          />
+          <FontAwesomeIcon
+            className="cursor-pointer"
+            icon={faTrash}
+            onClick={() => handelDeleteUser(item._id)}
+          />
         </div>
       </div>
+    ))}
+  </div>
+</div>
+
+
       <Modal onModalClose={closeCatagaryModal} isModalOpen={showCatagaryModal}>
         <CatagaryModal
           closeCatagaryModal={closeCatagaryModal}
@@ -127,4 +127,4 @@ function Catagary() {
   );
 }
 
-export default Catagary;
+export default Category;
