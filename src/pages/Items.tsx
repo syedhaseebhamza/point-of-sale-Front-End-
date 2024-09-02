@@ -36,7 +36,7 @@ function Items() {
       try {
         const response = await getAllCatagory();
         setCatagory(response);
-        console.log("response", response);
+        console.log("response setCatagory", response);
       } catch (error) {
         console.error("Failed to fetch categories", error);
       }
@@ -98,8 +98,14 @@ function Items() {
                     <div>
                       {item.variants.map((variant: any) => (
                         <div key={variant._id}>
-                          {variant?.size} , {variant?.price} (Rs)
+                          {variant?.size}
                         </div>
+                      ))}
+                    </div>
+                  ) : header.key === "salePrice" ? (
+                    <div>
+                      {item.variants.map((variant: any) => (
+                        <div key={variant._id}>{variant?.price} (Rs)</div>
                       ))}
                     </div>
                   ) : (

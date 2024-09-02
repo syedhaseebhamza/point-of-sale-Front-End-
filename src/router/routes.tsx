@@ -6,7 +6,9 @@ import Home from "@/pages/Home";
 import Items from "@/pages/Items";
 import Login from "@/pages/Login";
 import Menu from "@/pages/Menu";
+import Order from "@/pages/Order";
 import RolePermission from "@/pages/RolePermission";
+import Sales from "@/pages/Sales";
 import UserPage from "@/pages/UserPage";
 import { Navigate, createBrowserRouter as Router } from "react-router-dom";
 
@@ -52,6 +54,14 @@ export const nonAuthRoutes = Router([
       {
         path: "/deals",
         element: <Deals />,
+      },
+      {
+        path: "/sales",
+        element: <Sales />,
+      },
+      {
+        path: "/order",
+        element: <Order />,
       },
       {
         path: "/menu",
