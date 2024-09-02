@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
@@ -9,6 +9,7 @@ import {
   faTags,
   faBars,
 } from "@fortawesome/free-solid-svg-icons";
+import Button from "../common/button";
 
 const sideBarMenu = [
   { menuName: "User Management", path: "/user", icon: faUser },
@@ -20,8 +21,11 @@ const sideBarMenu = [
 ];
 
 function Sidebar() {
+  const navigate = useNavigate();
+
   return (
-    <div className="p-8">
+    <div className="p-8 flex flex-col justify-between min-h-screen">
+    <div>
       <ul className="space-y-4">
         {sideBarMenu.map((menuItem) => (
           <li key={menuItem.path}>
@@ -41,6 +45,18 @@ function Sidebar() {
           </li>
         ))}
       </ul>
+    </div>
+    <div>
+        <Button
+          onClick={() => {
+            localStorage.clear();
+            navigate("/login");
+            window.location.href = "/login";
+          }}
+          label="Logout"
+          className="bg-secondary text-white hover:bg-white hover:text-secondary "
+        />
+      </div>
     </div>
   );
 }

@@ -48,7 +48,7 @@ function UserPage() {
     <div>
       <div className="p-8">
         <div className="flex justify-end items-center gap-3">
-          <h1 className="text-2xl font-bold mb-[0.5rem]">User Management</h1>
+          <h1 className="text-2xl font-bold text-center">User Management</h1>
           <Button
             onClick={openAddNewUserModal}
             variant="secondary"

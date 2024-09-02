@@ -9,6 +9,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import CatagaryEditModal from "@/components/CatagaryEditModal";
+import defaultimage from "/defaultimge.png"
 
 function Category() {
   const [showCatagaryModal, setShowCatagaryModal] = useState(false);
@@ -80,7 +81,7 @@ function Category() {
         <div className="flex justify-start">
           <img
             className="border object-cover rounded-full h-20 w-20"
-            src={item?.image}
+            src={item?.image || defaultimage}
             alt="img"
           />
         </div>
