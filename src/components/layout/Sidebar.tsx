@@ -25,50 +25,62 @@ const sideBarMenu = [
   { menuName: "Menu", path: "/menu", icon: faBars },
 ];
 
-function Sidebar({sidebarWidth}:any) {
+function Sidebar({ sidebarWidth }: any) {
   const navigate = useNavigate();
 
   return (
-    <div className={`p-8 flex flex-col justify-between ${sidebarWidth ? 'items-center' : ""}  min-h-screen `}>
-    <div>
-      <ul className="space-y-4">
-        {sideBarMenu.map((menuItem) => (
-          <li key={menuItem.path}>
-            <NavLink
-              to={menuItem.path}
-              className={({ isActive }) =>
-                `p-2 rounded flex gap-8 items-center${
-                  isActive ? "bg-white text-black" : "hover:bg-[#FFF1CD]"
-                }`
-              }
-            >
-              <div>
-                <FontAwesomeIcon icon={menuItem.icon} size="lg" />
-              </div>
-              <span className={`flex-grow ${sidebarWidth ? "hidden" : ""}`}>{menuItem.menuName}</span>
-            </NavLink>
-          </li>
-        ))}
-      </ul>
-    </div>
-    {sidebarWidth ? (
+    <div
+      className={`p-8 flex flex-col justify-between ${
+        sidebarWidth ? "items-center" : ""
+      }  min-h-screen `}
+    >
       <div>
-        <SwitchIcon />
+        <ul className="space-y-4">
+          {sideBarMenu.map((menuItem) => (
+            <li key={menuItem.path}>
+              <NavLink
+                to={menuItem.path}
+                className={({ isActive }) =>
+                  `p-3 rounded-[14px] flex gap-8 items-center ${
+                    isActive ? " bg-white text-primary hover:bg-hover_primary" : "hover:bg-hover_primary"
+                  }`
+                }
+              >
+                <div>
+                  <FontAwesomeIcon icon={menuItem.icon} size="lg" />
+                </div>
+                <span
+                  className={`flex-grow  font-bold ${
+                    sidebarWidth ? "hidden" : ""
+                  }`}
+                >
+                  {menuItem.menuName}
+                </span>
+              </NavLink>
+            </li>
+          ))}
+        </ul>
       </div>
-    ) : (
-<div>
-        <Button
-          onClick={() => {
-            localStorage.clear();
-            navigate("/login");
-            window.location.href = "/login";
-          }}
-          label="Logout"
-          className="bg-secondary text-white hover:bg-white hover:text-secondary "
-        />
+      <div
+        onClick={() => {
+          localStorage.clear();
+          navigate("/login");
+          window.location.href = "/login";
+        }}
+      >
+        {sidebarWidth ? (
+          <div className="hover:bg-hover_primary p-3 rounded-[14px]  cursor-pointer">
+            <SwitchIcon />
+          </div>
+        ) : (
+          <div>
+            <Button
+              label="Logout"
+              className="bg-secondary text-white hover:bg-white hover:text-secondary "
+            />
+          </div>
+        )}
       </div>
-    )}
-    
     </div>
   );
 }
