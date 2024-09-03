@@ -32,8 +32,8 @@ export const handelDeleteCategory = async (id: any) => {
       method: "DELETE",
     });
     return responce;
-  } catch (error) {
-    throw new Error("Failed to delete catagory");
+  } catch (error: any) {
+    throw new Error(error.response.data.message || "Failed to delete catagory");
   }
 };
 
@@ -45,7 +45,7 @@ export const handelUpdateCategory = async (data: any, id: any) => {
       data,
     });
     return responce;
-  } catch (error) {
-    throw new Error("Failed to update catagory");
+  } catch (error: any) {
+    throw new Error(error.response.data.message || "Failed to update catagory");
   }
 };

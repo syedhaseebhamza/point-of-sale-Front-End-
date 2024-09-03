@@ -1,10 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Input from "./common/inputField";
 import Button from "./common/button";
-import { handelAddNewItem } from "@/app/features/Item/itemApi";
+import {
+  handelAddNewItem,
+  handelUpdateItem,
+} from "@/app/features/Item/itemApi";
 import { MinusIcon, PlusIcon } from "./ui-icons";
 
-function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
+function ItemModal({
+  catagory,
+  onItemAdded,
+  closeItemModal,
+  setToast,
+  selectedItemId,
+  items,
+  onItemUpdated,
+  isEditModa,
+}: any) {
   const [selectedValue, setSelectedValue] = useState("");
   const [selectedCatagoryId, setSelectedCatagoryId] = useState("");
   const [variants, setVariants] = useState([{ size: "", price: "" }]);
@@ -50,9 +62,8 @@ function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
 
   const handleAddVariant = () => {
     setVariants([...variants, { size: "", price: "" }]);
-    
   };
-  
+
   const handleRemoveVariant = (index: number) => {
     const newVariants = variants.filter((_, i) => i !== index);
     setVariants(newVariants);
@@ -75,13 +86,54 @@ function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
         onItemAdded(response.item);
       }
 
-      console.log("response", response);
-    } catch (error) {
+      setToast({
+        type: "success",
+        message: "Item added successfully",
+      });
+    } catch (error: any) {
       console.error("Error:", error);
+      setToast({
+        type: "error",
+        message: error.message,
+      });
     } finally {
       closeItemModal();
     }
   };
+
+  const handleSave = async () => {
+    const data = {
+      categoryName: formValues.categoryName,
+      name: formValues.name,
+      retailPrice: formValues.retailPrice,
+      variants: variants,
+    };
+    try {
+      await handelUpdateItem(data, selectedItemId);
+      closeItemModal();
+      onItemUpdated();
+    } catch (error) {
+      console.error("Error updating item:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (isEditModa && selectedItemId) {
+      const selectedItem = items.find(
+        (item: any) => item._id === selectedItemId
+      );
+      if (selectedItem) {
+        setFormValues({
+          categoryName: selectedItem.categoryName,
+          name: selectedItem.name,
+          retailPrice: selectedItem.retailPrice,
+        });
+        setSelectedCatagoryId(selectedItem.catagoryId);
+        setSelectedValue(selectedItem.categoryName);
+        setVariants(selectedItem.variants);
+      }
+    }
+  }, [isEditModa, selectedItemId, items]);
 
   return (
     <div>
@@ -126,12 +178,14 @@ function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
             )}
           </div>
           <Input
+            value={formValues.name}
             name="name"
             placeholder="Name"
             label="Name"
             onChange={handelItemFormChange}
           />
           <Input
+            value={formValues.retailPrice}
             name="retailPrice"
             placeholder="Reail Price"
             label="Reail Price"
@@ -143,7 +197,7 @@ function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
           <div className="flex items-end justify-end">
             <div
               onClick={handleAddVariant}
-              className="cursor-pointer flex mt-[10px] justify-center rounded-full items-center  bg-[#E8E8E8] w-[60px] h-[60px]"
+              className="cursor-pointer flex mt-[10px] justify-center rounded-full items-center  bg-[#E8E8E8] w-[40px] h-[40px]"
             >
               <PlusIcon />
             </div>
@@ -167,18 +221,23 @@ function ItemModal({ catagory, onItemAdded, closeItemModal }: any) {
                 value={variant.price}
                 onChange={(e) => handleVariantChange(index, e)}
               />
-               {variants.length > 1 && (
-              <div
-                onClick={() => handleRemoveVariant(index)}
-                className="absolute right-[-2.8rem]  top-[3rem] cursor-pointer"
-              >
-                <MinusIcon />
-              </div> )}
+              {variants.length > 1 && (
+                <div
+                  onClick={() => handleRemoveVariant(index)}
+                  className="absolute right-[-2.8rem]  top-[3rem] cursor-pointer"
+                >
+                  <MinusIcon />
+                </div>
+              )}
             </div>
           ))}
         </div>
         <div className="flex items-end justify-end ">
-          <Button onClick={handleSubmit} label="Save" className="px-[4rem]" />
+          <Button
+            onClick={isEditModa ? handleSave : handleSubmit}
+            label="Save"
+            className="px-[4rem]"
+          />
         </div>
       </div>
     </div>

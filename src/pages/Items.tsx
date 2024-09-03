@@ -6,7 +6,7 @@ import { getAllCatagory } from "@/app/features/catagory/catagoryApi";
 import { getAllItem, handelDeleteItem } from "@/app/features/Item/itemApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
-import ItemEditModal from "@/components/ItemEditModal";
+import ToastMessage from "@/components/common/toast";
 const headers = [
   { label: "Category Name", key: "categoryName" },
   { label: "Name", key: "name" },
@@ -24,19 +24,31 @@ const actions = [
 function Items() {
   const [showItemModal, setShowItemModal] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState("");
-  const [showItemEditModal, setShowItemEditModal] = useState(false);
-
+  const [isEditModa, setIsEditModa] = useState(false);
+  const [toast, setToast] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
   const [catagory, setCatagory] = useState([]);
   const [items, setItems] = useState<any>([]);
-  const openItemModal = () => setShowItemModal(true);
+  const openItemModal = () => {
+    setIsEditModa(false);
+    setSelectedItemId("");
+    setShowItemModal(true);
+  };
+
+  const openItemEditModal = (itemId: string) => {
+    setSelectedItemId(itemId);
+    setIsEditModa(true);
+    setShowItemModal(true);
+  };
+
   const closeItemModal = () => setShowItemModal(false);
-  const closeItemEditModal = () => setShowItemEditModal(false);
   useEffect(() => {
     const fetchCatagory = async () => {
       try {
         const response = await getAllCatagory();
         setCatagory(response);
-        console.log("response setCatagory", response);
       } catch (error) {
         console.error("Failed to fetch categories", error);
       }
@@ -70,13 +82,24 @@ function Items() {
     setItems((prevItem: any) => [...prevItem, newItem]);
   };
   const handelDeleteUser = (id: any) => {
-    handelDeleteItem(id).then((res) => {
-      const filterItem = items.filter((item: any) => item._id !== id);
-      setItems(filterItem);
-    });
+    handelDeleteItem(id)
+      .then((res) => {
+        const filterItem = items.filter((item: any) => item._id !== id);
+        setItems(filterItem);
+        setToast({
+          type: "success",
+          message: "Item deleted successfully!",
+        });
+      })
+      .catch((error) => {
+        setToast({
+          type: "error",
+          message: error.message,
+        });
+      });
   };
   return (
-    <div>
+    <div className="relative">
       <Button variant="secondary" onClick={openItemModal} label="Add Item" />
       <div className="pt-[4rem]">
         <div className="bg-white border border-gray-300 rounded-lg shadow-md">
@@ -97,9 +120,7 @@ function Items() {
                   {header.key === "size" ? (
                     <div>
                       {item.variants.map((variant: any) => (
-                        <div key={variant._id}>
-                          {variant?.size}
-                        </div>
+                        <div key={variant._id}>{variant?.size}</div>
                       ))}
                     </div>
                   ) : header.key === "salePrice" ? (
@@ -120,10 +141,7 @@ function Items() {
                       <FontAwesomeIcon
                         className="cursor-pointer"
                         icon={action.icon}
-                        onClick={() => {
-                          setSelectedItemId(item._id);
-                          setShowItemEditModal(true);
-                        }}
+                        onClick={() => openItemEditModal(item._id)}
                       />
                     </span>
                   ) : (
@@ -146,17 +164,23 @@ function Items() {
           closeItemModal={closeItemModal}
           catagory={catagory}
           onItemAdded={handelAddItem}
-        />
-      </Modal>
-      <Modal onModalClose={closeItemEditModal} isModalOpen={showItemEditModal}>
-        <ItemEditModal
-          catagory={catagory}
-          closeItemEditModal={closeItemEditModal}
+          setToast={setToast}
           selectedItemId={selectedItemId}
           items={items}
           onItemUpdated={handelUpdateItem}
+          isEditModa={isEditModa}
         />
       </Modal>
+
+      <div className=" absolute  top-[-6rem]  right-0">
+        {toast && (
+          <ToastMessage
+            type={toast.type}
+            message={toast.message}
+            onClose={() => setToast(null)}
+          />
+        )}
+      </div>
     </div>
   );
 }

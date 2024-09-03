@@ -6,19 +6,25 @@ import {
   getAllCatagory,
   handelDeleteCategory,
 } from "@/app/features/catagory/catagoryApi";
+import ToastMessage from "@/components/common/toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
-import CatagaryEditModal from "@/components/CatagaryEditModal";
-import defaultimage from "/defaultimge.png"
+import defaultimage from "/defaultimge.png";
 
 function Category() {
   const [showCatagaryModal, setShowCatagaryModal] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
-  const [showCatagaryEditModal, setShowCatagaryEditModal] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [allCatagory, setAllCatagory] = useState<any>([]);
-  const openCatagaryModal = () => setShowCatagaryModal(true);
+  const [toast, setToast] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+  const openCatagaryModal = () => {
+    setIsEditMode(false);
+    setShowCatagaryModal(true);
+  };
   const closeCatagaryModal = () => setShowCatagaryModal(false);
-  const closeCatagaryEditModal = () => setShowCatagaryEditModal(false);
 
   useEffect(() => {
     const fetchCatagory = async () => {
@@ -47,14 +53,24 @@ function Category() {
   };
 
   const handelDeleteUser = (id: any) => {
-    handelDeleteCategory(id).then((res) => {
-      const filterCategory = allCatagory.filter((item: any) => item._id !== id);
-      setAllCatagory(filterCategory);
-    });
+    handelDeleteCategory(id)
+      .then((res) => {
+        setToast({
+          type: "success",
+          message: "Category deleted successfully!",
+        });
+        const filterCategory = allCatagory?.filter(
+          (item: any) => item._id !== id
+        );
+        setAllCatagory(filterCategory);
+      })
+      .catch((error) => {
+        setToast({ type: "error", message: error.message });
+      });
   };
 
   return (
-    <div>
+    <div className="relative">
       <Button
         variant="secondary"
         onClick={openCatagaryModal}
@@ -62,14 +78,12 @@ function Category() {
       />
       <div className="pt-[4rem]">
         <div className="bg-white border border-gray-300 rounded-lg shadow-md">
-          {/* Header */}
           <div className="grid grid-cols-4 py-3 px-4 border-b border-gray-300 text-sm font-semibold text-gray-700">
             <span>Name</span>
             <span>Image</span>
             <span>Description</span>
             <span>Actions</span>
           </div>
-          {/* Data Rows */}
           {allCatagory?.map((item: any) => (
             <div
               key={item._id}
@@ -79,7 +93,7 @@ function Category() {
               <div className="flex justify-start">
                 <img
                   className="border object-cover rounded-full h-20 w-20"
-                src={item?.image || defaultimage}
+                  src={item?.image || defaultimage}
                   alt="img"
                 />
               </div>
@@ -90,7 +104,9 @@ function Category() {
                   icon={faEdit}
                   onClick={() => {
                     setSelectedCategoryId(item._id);
-                    setShowCatagaryEditModal(true);
+                    // setShowCatagaryEditModal(true);
+                    openCatagaryModal();
+                    setIsEditMode(true);
                   }}
                 />
                 <FontAwesomeIcon
@@ -108,19 +124,22 @@ function Category() {
         <CatagaryModal
           closeCatagaryModal={closeCatagaryModal}
           onCategoryAdded={handleNewCategory}
-        />
-      </Modal>
-      <Modal
-        onModalClose={closeCatagaryEditModal}
-        isModalOpen={showCatagaryEditModal}
-      >
-        <CatagaryEditModal
+          setToast={setToast}
           selectedCategoryId={selectedCategoryId}
           allCatagory={allCatagory}
-          closeCatagaryEditModal={closeCatagaryEditModal}
           onCategoryUpdated={handleCategoryUpdated}
+          isEditMode={isEditMode}
         />
       </Modal>
+      <div className=" absolute  top-[-6rem]  right-0">
+        {toast && (
+          <ToastMessage
+            type={toast.type}
+            message={toast.message}
+            onClose={() => setToast(null)}
+          />
+        )}
+      </div>
     </div>
   );
 }
