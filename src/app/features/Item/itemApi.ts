@@ -22,8 +22,8 @@ export const handelAddNewItem = async (data: any, categoryId: any) => {
       params,
     });
     return response;
-  } catch (error) {
-    throw new Error("Failed to add fetch Item");
+  } catch (error: any) {
+    throw new Error(error.response.data.message || "Failed to add fetch Item");
   }
 };
 
@@ -34,8 +34,8 @@ export const handelDeleteItem = async (id: any) => {
       method: "DELETE",
     });
     return responce;
-  } catch (error) {
-    throw new Error("Failed to delete item");
+  } catch (error: any) {
+    throw new Error(error.response.data.message || "Failed to delete item");
   }
 };
 

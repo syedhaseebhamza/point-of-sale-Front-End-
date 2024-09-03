@@ -1,17 +1,27 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import Input from "./common/inputField";
 import Button from "./common/button";
-import { handelAddCatagory } from "@/app/features/catagory/catagoryApi";
+import {
+  handelAddCatagory,
+  handelUpdateCategory,
+} from "@/app/features/catagory/catagoryApi";
 import { PlusIcon } from "./ui-icons";
 
-function CatagaryModal({ closeCatagaryModal, onCategoryAdded }: any) {
+function CatagaryModal({
+  closeCatagaryModal,
+  onCategoryAdded,
+  setToast,
+  selectedCategoryId,
+  allCatagory,
+  isEditMode,
+  onCategoryUpdated,
+}: any) {
   const [categoryValues, setCategoryValues] = useState({
     name: "",
     description: "",
   });
   const [campaignPicture, setCampaignPicture] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
   const handleCategoryFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setCategoryValues({
@@ -32,8 +42,44 @@ function CatagaryModal({ closeCatagaryModal, onCategoryAdded }: any) {
     try {
       const response = await handelAddCatagory(formData);
       onCategoryAdded(response.newCategory);
+      setToast({ type: "success", message: "Category added successfully!" });
     } catch (error) {
       console.error("Error:", error);
+      setToast({
+        type: "error",
+        message: "Failed to add category Name & Description are required",
+      });
+    } finally {
+      closeCatagaryModal();
+    }
+  };
+
+  const handleSave = async () => {
+    const formData = new FormData();
+    formData.append("name", categoryValues.name);
+    formData.append("description", categoryValues.description);
+    if (campaignPicture) {
+      formData.append("image", campaignPicture);
+    }
+
+    try {
+      const updatedCategory = await handelUpdateCategory(
+        formData,
+        selectedCategoryId
+      );
+      if (updatedCategory.message === "Category updated successfully") {
+        onCategoryUpdated();
+      }
+      setToast({
+        type: "success",
+        message: "Category updated successfully!",
+      });
+    } catch (error: any) {
+      setToast({
+        type: "error",
+        message: error.message || "Failed to update category",
+      });
+      console.error("Failed to update category", error);
     } finally {
       closeCatagaryModal();
     }
@@ -47,18 +93,34 @@ function CatagaryModal({ closeCatagaryModal, onCategoryAdded }: any) {
     }
   };
 
+  useEffect(() => {
+    if (isEditMode) {
+      const selectedCategory = allCatagory.find(
+        (item: any) => item._id === selectedCategoryId
+      );
+      if (selectedCategory) {
+        setCategoryValues({
+          name: selectedCategory.name || "",
+          description: selectedCategory.description || "",
+        });
+        setImagePreview(selectedCategory.image || null);
+      }
+    }
+  }, [selectedCategoryId, allCatagory]);
   return (
     <div className="max-h-[400px] h-[400px] w-[800px] bg-white px-16 py-16 ">
       <div className="flex flex-col justify-between h-[300px] ">
         {" "}
         <div className="grid grid-cols-2 gap-x-4 gap-y-4">
           <Input
+            value={categoryValues.name}
             placeholder="Name"
             onChange={handleCategoryFormChange}
             name="name"
             label="Name"
           />
           <Input
+            value={categoryValues.description}
             placeholder="Description"
             onChange={handleCategoryFormChange}
             name="description"
@@ -95,7 +157,11 @@ function CatagaryModal({ closeCatagaryModal, onCategoryAdded }: any) {
           </div>
         </div>
         <div className="flex items-end justify-end ">
-          <Button onClick={handleSubmit} label="Save" className="px-[4rem]" />
+          <Button
+            onClick={isEditMode ? handleSave : handleSubmit}
+            label="Save"
+            className="px-[4rem]"
+          />
         </div>
       </div>
     </div>

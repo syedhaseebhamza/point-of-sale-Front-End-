@@ -10,15 +10,15 @@ export function RoundedCross({ ...props }: Icon) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="32"
-      height="32"
+      width="25"
+      height="25"
       viewBox="0 0 42 42"
       fill="none"
       {...props}
     >
       <path
         d="M41.5095 21.2547C41.5095 32.7173 32.2173 42.0095 20.7547 42.0095C9.29221 42.0095 0 32.7173 0 21.2547C0 9.79221 9.29221 0.5 20.7547 0.5C32.2173 0.5 41.5095 9.79221 41.5095 21.2547Z"
-        fill="#FF0000"
+        fill="#13203bcc"
         fillOpacity="0.88"
       />
       <path
@@ -94,8 +94,8 @@ export function PlusIcon({ ...props }: Icon) {
       fill="#000000"
       version="1.1"
       id="Capa_1"
-      width="24"
-      height="24"
+      width="15"
+      height="15"
       viewBox="0 0 45.402 45.402"
       {...props}
     >
@@ -110,16 +110,68 @@ export function MinusIcon({ ...props }: Icon) {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       fill="#000000"
-      height="24"
-      width="24"
+      height="20"
+      width="20"
       version="1.1"
       id="Capa_1"
       viewBox="0 0 330 330"
+      {...props}
     >
       <g>
         <path d="M281.633,48.328C250.469,17.163,209.034,0,164.961,0C120.888,0,79.453,17.163,48.289,48.328   c-64.333,64.334-64.333,169.011,0,233.345C79.453,312.837,120.888,330,164.962,330c44.073,0,85.507-17.163,116.671-48.328   c31.165-31.164,48.328-72.599,48.328-116.672S312.798,79.492,281.633,48.328z M260.42,260.46   C234.922,285.957,201.021,300,164.962,300c-36.06,0-69.961-14.043-95.46-39.54c-52.636-52.637-52.636-138.282,0-190.919   C95,44.042,128.901,30,164.961,30s69.961,14.042,95.459,39.54c25.498,25.499,39.541,59.4,39.541,95.46   S285.918,234.961,260.42,260.46z" />
         <path d="M254.961,150H74.962c-8.284,0-15,6.716-15,15s6.716,15,15,15h179.999c8.284,0,15-6.716,15-15S263.245,150,254.961,150z" />
       </g>
+    </svg>
+  );
+}
+
+export function ToastSuccessIcon({ ...props }: Icon) {
+  return (
+    <svg
+      className="w-5 h-5"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="currentColor"
+      viewBox="0 0 20 20"
+      {...props}
+    >
+      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
+    </svg>
+  );
+}
+
+export function ToastCrossIcon({ ...props }: Icon) {
+  return (
+    <svg
+      className="w-3 h-3"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 14 14"
+      {...props}
+    >
+      <path
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+      />
+    </svg>
+  );
+}
+
+export function ToastFailIcon({ ...props }: Icon) {
+  return (
+    <svg
+      className="w-5 h-5"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="currentColor"
+      viewBox="0 0 20 20"
+      {...props}
+    >
+      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z" />
     </svg>
   );
 }

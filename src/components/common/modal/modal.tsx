@@ -33,7 +33,7 @@ const Modal: React.FC<ModalProps> = ({
       ></div>
       <div className="relative bg-white p-0 shadow-xl w-auto h-auto z-10 max-w-full max-h-full  ">
         <button
-          className="absolute top-[-1rem] right-[-0.7rem] text-gray-600 hover:text-gray-900 z-[10]"
+          className="absolute top-[-0.9rem] right-[-0.5rem] text-gray-600 hover:text-gray-900 z-[10]"
           onClick={onModalClose}
         >
           <RoundedCross />

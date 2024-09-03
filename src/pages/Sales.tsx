@@ -17,7 +17,6 @@ function Sales() {
       try {
         const response = await getAllCatagory();
         setCatagory(response);
-        console.log("response", response);
       } catch (error) {
         console.error("Failed to fetch categories", error);
       }
