@@ -7,13 +7,13 @@ export default function Layout() {
   const [sidebarWidth, setSidebarWidth] = useState<boolean>(true);
 
   return (
-    <div className="flex">
+    <div className="flex h-full w-full">
       <div
         className={`transition-all duration-300 ease-in-out ${
-          sidebarWidth ? "w-0 opacity-0" : "w-1/6"
-        } bg-primary h-screen`}
+          sidebarWidth ? "w-20" : "w-1/6"
+        } bg-primary  h-screen`}
       >
-        <Sidebar />
+        <Sidebar sidebarWidth={sidebarWidth} />
       </div>
       <div
         className={`transition-all duration-300 ease-in-out ${
