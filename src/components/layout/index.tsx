@@ -11,7 +11,7 @@ export default function Layout() {
       <div
         className={`transition-all duration-300 ease-in-out ${
           sidebarWidth ? "w-20" : "w-1/6"
-        } bg-primary  h-screen`}
+        } shadow-lg  h-screen`}
       >
         <Sidebar sidebarWidth={sidebarWidth} />
       </div>
