@@ -1,8 +1,14 @@
 import React, { useState } from "react";
 import { login } from "../app/features/Auth/authSlice";
-import {  useAppDispatch } from "@/app/hooks";
+import { useAppDispatch } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
-import { Email, Eye } from "@/components/ui-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faEnvelope,
+  faEye,
+  faEyeSlash,
+} from "@fortawesome/free-solid-svg-icons";
+import loginimage from "../Images/login.jpg";
 
 function Login() {
   const dispatch = useAppDispatch();
@@ -31,12 +37,13 @@ function Login() {
       console.error(error);
     }
   };
+
   return (
     <div className="font-[sans-serif]">
       <div className="grid lg:grid-cols-3 md:grid-cols-2 items-center gap-4 h-full">
         <div className="max-md:order-1 lg:col-span-2 md:h-screen w-full md:rounded-tr-xl md:rounded-br-xl lg:p-12 p-8">
           <img
-            src="https://plus.unsplash.com/premium_photo-1683121324502-94bd9fa0202e?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            src={loginimage}
             className="lg:w-[100%] w-full h-full object-cover block mx-auto"
             alt="login-image"
           />
@@ -45,9 +52,7 @@ function Login() {
         <div className="w-full p-6">
           <form onSubmit={handelSubmit}>
             <div>
-              <label className="text-gray-800 text-[15px] mb-2 block">
-                Email
-              </label>
+              <label className="font-bold mb-2">Email</label>
               <div className="relative flex items-center">
                 <input
                   value={credentials.username}
@@ -58,37 +63,38 @@ function Login() {
                   className="w-full text-sm text-gray-800 bg-gray-100 focus:bg-transparent px-4 py-3.5 rounded-md outline-blue-600"
                   placeholder="Enter Username"
                 />
-                <Email />
+                <FontAwesomeIcon
+                  icon={faEnvelope}
+                  className="absolute right-4 text-gray-500"
+                />
               </div>
             </div>
 
             <div className="mt-4">
-              <label className="text-gray-800 text-[15px] mb-2 block">
-                Password
-              </label>
-              <div onClick={()=> {
-                setShowPassword(!showPassword)
-              }} className="relative flex items-center">
+              <label className=" font-bold mb-2">Password</label>
+              <div className="relative flex items-center">
                 <input
                   value={credentials.password}
                   onChange={handelCredentialsChange}
                   name="password"
-                  type={showPassword ? "password" : "text"}
+                  type={showPassword ? "text" : "password"}
                   required
                   className="w-full text-sm text-gray-800 bg-gray-100 focus:bg-transparent px-4 py-3.5 rounded-md outline-blue-600"
                   placeholder="Enter password"
                 />
-              {showPassword ? <Eye /> : <Eye /> }  
+                <FontAwesomeIcon
+                  icon={showPassword ? faEyeSlash : faEye}
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 cursor-pointer text-gray-500"
+                />
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-4 mt-4">
-
-            </div>
+            <div className="flex flex-wrap items-center justify-between gap-4 mt-4"></div>
             <div className="mt-8">
               <button
                 type="submit"
-                className="w-full py-3 px-6 text-sm tracking-wide rounded-md text-white bg-[#5c3a16] focus:outline-none"
+                className="w-full py-3 px-6 text-md tracking-wide rounded-md text-white bg-primary hover:bg-hover_primary hover:text-black focus:outline-none"
               >
                 Sign in
               </button>
