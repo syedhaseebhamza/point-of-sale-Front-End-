@@ -83,7 +83,7 @@ function Login() {
                   placeholder="Enter password"
                 />
                 <FontAwesomeIcon
-                  icon={showPassword ? faEyeSlash : faEye}
+                  icon={showPassword ? faEye :  faEyeSlash}
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 cursor-pointer text-gray-500"
                 />
@@ -96,7 +96,7 @@ function Login() {
                 type="submit"
                 className="w-full py-3 px-6 text-md tracking-wide rounded-md text-white bg-primary hover:bg-hover_primary hover:text-black focus:outline-none"
               >
-                Sign in
+                LogIn
               </button>
             </div>
           </form>

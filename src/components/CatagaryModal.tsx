@@ -141,7 +141,7 @@ function CatagaryModal({
                 <img
                   src={imagePreview}
                   alt="Selected"
-                  className="min-h-[40px] max-h-[40px] min-w-[40px] max-w-[40px] object-cover rounded"
+                  className="min-h-[40px]  max-h-[40px] min-w-[40px] max-w-[40px] object-cover rounded-full"
                 />
               </div>
             ) : (
