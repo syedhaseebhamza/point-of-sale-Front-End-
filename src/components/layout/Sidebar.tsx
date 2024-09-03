@@ -12,6 +12,7 @@ import {
   faShoppingCart,
 } from "@fortawesome/free-solid-svg-icons";
 import Button from "../common/button";
+import { SwitchIcon } from "../ui-icons";
 
 const sideBarMenu = [
   { menuName: "User Management", path: "/user", icon: faUser },
@@ -24,11 +25,11 @@ const sideBarMenu = [
   { menuName: "Menu", path: "/menu", icon: faBars },
 ];
 
-function Sidebar() {
+function Sidebar({sidebarWidth}:any) {
   const navigate = useNavigate();
 
   return (
-    <div className="p-8 flex flex-col justify-between min-h-screen">
+    <div className={`p-8 flex flex-col justify-between ${sidebarWidth ? 'items-center' : ""}  min-h-screen `}>
     <div>
       <ul className="space-y-4">
         {sideBarMenu.map((menuItem) => (
@@ -44,13 +45,18 @@ function Sidebar() {
               <div>
                 <FontAwesomeIcon icon={menuItem.icon} size="lg" />
               </div>
-              <span className="flex-grow">{menuItem.menuName}</span>
+              <span className={`flex-grow ${sidebarWidth ? "hidden" : ""}`}>{menuItem.menuName}</span>
             </NavLink>
           </li>
         ))}
       </ul>
     </div>
-    <div>
+    {sidebarWidth ? (
+      <div>
+        <SwitchIcon />
+      </div>
+    ) : (
+<div>
         <Button
           onClick={() => {
             localStorage.clear();
@@ -61,6 +67,8 @@ function Sidebar() {
           className="bg-secondary text-white hover:bg-white hover:text-secondary "
         />
       </div>
+    )}
+    
     </div>
   );
 }

@@ -151,12 +151,14 @@ function SalesModal({ catagory, items }: any) {
               value={entry.quantity}
               onChange={(e) => handleInputChange(e.target.value, index)}
             />
-            <div
-              onClick={() => handleRemoveEntry(index)}
-              className="absolute right-[-3rem] top-[4rem] cursor-pointer"
-            >
-              <MinusIcon />
-            </div>
+            {formEntries.length > 1 && (
+              <div
+                onClick={() => handleRemoveEntry(index)}
+                className="absolute right-[-3rem] top-[4rem] cursor-pointer"
+              >
+                <MinusIcon />
+              </div>
+            )}
           </div>
         ))}
 

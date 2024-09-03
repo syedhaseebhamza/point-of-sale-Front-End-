@@ -10,16 +10,9 @@ interface HeaderProps {
 const Header: FC<HeaderProps> = ({ sidebarWidth, setSidebarWidth }) => {
   return (
     <div
-      style={{
-        backgroundImage:
-          "url('https://beyondtype1.org/wp-content/uploads/2023/01/FAST-FOOD-CHAIN-NUTRITION-GUIDE-HEADER.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        // filter: "blur(1.8px)",
-      }}
-      className="bg-cover bg-center  h-24 flex items-center justify-between p-8"
+      className="bg-cover bg-center shadow-xl h-24 flex items-center justify-between p-8"
     >
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
         {sidebarWidth ? (
           <div
             className="cursor-pointer"
@@ -36,6 +29,10 @@ const Header: FC<HeaderProps> = ({ sidebarWidth, setSidebarWidth }) => {
             />
           </div>
         )}
+
+        <div className="font-bold text-2xl">
+              Welcome to CodeSync Resturent
+      </div>
       </div>
 
     </div>
