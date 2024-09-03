@@ -26,7 +26,8 @@ function Sales() {
   console.log("catagory", catagory);
 
   return (
-    <div>
+    <>
+  
       <div className="grid grid-cols-6 gap-x-4 gap-y-4">
         {catagory.map((cat: any) => (
           <Card
@@ -37,6 +38,7 @@ function Sales() {
           />
         ))}
       </div>
+
       <button onClick={handleOpenDrawer} className="btn btn-primary">
         Open Drawer
       </button>
@@ -53,19 +55,20 @@ function Sales() {
         <div className="grid grid-cols-2 gap-4">
           <a
             href="#"
-            className="px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none hover:bg-gray-100 hover:text-blue-700"
+            className="px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none hover:bg-gray-100 hover:text-primary"
           >
             Learn more
           </a>
           <a
             href="#"
-            className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800"
+            className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-primary rounded-lg hover:bg-white hover:border hover:border-primary hover:text-black"
           >
             Get access
           </a>
         </div>
       </Drawer>
-    </div>
+      
+    </>
   );
 }
 
