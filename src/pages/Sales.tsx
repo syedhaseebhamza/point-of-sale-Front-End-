@@ -1,14 +1,12 @@
 import { getAllCatagory } from "@/app/features/catagory/catagoryApi";
+import { getItemByCategoryId } from "@/app/features/sales/salesApi";
 import Card from "@/components/common/cards";
-import Drawer from "@/components/common/drawer";
 import React, { useEffect, useState } from "react";
 
 function Sales() {
   const [catagory, setCatagory] = useState<any>([]);
-  const [isDrawerOpen, setDrawerOpen] = useState(false);
-
-  const handleOpenDrawer = () => setDrawerOpen(true);
-  const handleCloseDrawer = () => setDrawerOpen(false);
+  const [selectedItemValueByCategoryId, setSelectedItemValueByCategoryId] =
+    useState<any>([]);
 
   useEffect(() => {
     const fetchCatagory = async () => {
@@ -23,51 +21,45 @@ function Sales() {
     fetchCatagory();
   }, []);
 
-  console.log("catagory", catagory);
+  const handleItemClick = async (categoryId: string) => {
+    try {
+      const response = await getItemByCategoryId(categoryId);
+      console.log("Fetched Items:", response.items);
+      setSelectedItemValueByCategoryId(response.items);
+    } catch (error) {
+      console.error("Error fetching items for category:", error);
+    }
+  };
 
   return (
     <>
-  
-      <div className="grid grid-cols-6 gap-x-4 gap-y-4">
-        {catagory.map((cat: any) => (
-          <Card
-            key={cat._id}
-            image={cat.image || "/default-image.jpg"}
-            name={cat.name}
-            description={cat.description}
-          />
-        ))}
-      </div>
-
-      <button onClick={handleOpenDrawer} className="btn btn-primary">
-        Open Drawer
-      </button>
-      <Drawer isOpen={isDrawerOpen} onClose={handleCloseDrawer}>
-        <h5
-          id="drawer-right-label"
-          className="inline-flex items-center mb-4 text-base font-semibold text-gray-500 dark:text-gray-400"
-        >
-          Right drawer
-        </h5>
-        <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
-          Supercharge your hiring by taking advantage of our limited-time sale.
-        </p>
-        <div className="grid grid-cols-2 gap-4">
-          <a
-            href="#"
-            className="px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none hover:bg-gray-100 hover:text-primary"
-          >
-            Learn more
-          </a>
-          <a
-            href="#"
-            className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-primary rounded-lg hover:bg-white hover:border hover:border-primary hover:text-black"
-          >
-            Get access
-          </a>
+      <div className="flex w-full justify-between">
+        <div className="flex flex-col gap-[4rem]   justify-between w-[70%]">
+          <div className="grid grid-cols-7 gap-x-4 gap-y-4  w-full">
+            {catagory.map((cat: any) => (
+              <div onClick={() => handleItemClick(cat._id)}>
+                <Card
+                  key={cat._id}
+                  image={cat.image || "/default-image.jpg"}
+                  name={cat.name}
+                />
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-col-4 gap-x-4 gap-y-4  w-full">
+            <div>
+              {selectedItemValueByCategoryId.map((item: any) => (
+                <div key={item._id}>
+                  <span>{item.name}</span>
+                  <span>{item.categoryName}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      </Drawer>
-      
+
+        <div className="w-[30%] bg-primary">sad</div>
+      </div>
     </>
   );
 }
