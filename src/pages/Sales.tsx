@@ -1,7 +1,8 @@
+import React, { useEffect, useState } from "react";
 import { getAllCatagory } from "@/app/features/catagory/catagoryApi";
 import { getItemByCategoryId } from "@/app/features/sales/salesApi";
 import Card from "@/components/common/cards";
-import React, { useEffect, useState } from "react";
+import defaultimage from "../Images/default_rectangle.jpg";
 
 function Sales() {
   const [catagory, setCatagory] = useState<any>([]);
@@ -46,15 +47,21 @@ function Sales() {
               </div>
             ))}
           </div>
-          <div className="grid grid-col-4 gap-x-4 gap-y-4  w-full">
-            <div>
-              {selectedItemValueByCategoryId.map((item: any) => (
-                <div key={item._id}>
-                  <span>{item.name}</span>
-                  <span>{item.categoryName}</span>
+          <div className="flex flex-row gap-4   w-full">
+            {selectedItemValueByCategoryId.map((item: any) => (
+              <div key={item._id}>
+                <div className="border min-w-36 max-w-36">
+                  <img
+                    className="w-full rounded-tl-[6px] rounded-tr-[6px]  min-h-20 max-h-20 bg-contain"
+                    src={item?.image || defaultimage}
+                    alt={item.name}
+                  />
+                  <div className="px-4 py-1">
+                    <span className="font-bold">{item.name}</span>
+                  </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
 
