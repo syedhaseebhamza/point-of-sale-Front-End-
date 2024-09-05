@@ -7,7 +7,6 @@ interface CardProps {
 }
 
 function Card({ image, name }: CardProps) {
-  console.log("image", image);
 
   return (
     <div className="cursor-pointer py-4 px-4 bg-white border border-gray-600 rounded-[48px]   shadow-md shadow-gray-600 hover:scale-[1.09]">
