@@ -3,12 +3,17 @@ import { getAllCatagory } from "@/app/features/catagory/catagoryApi";
 import { getItemByCategoryId } from "@/app/features/sales/salesApi";
 import Card from "@/components/common/cards";
 import defaultimage from "../Images/default_rectangle.jpg";
+import default2 from "/burgerphoto.jpg"
 import { getAllItem } from "@/app/features/Item/itemApi";
+import Button from "@/components/common/button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClose } from "@fortawesome/free-solid-svg-icons";
 
 function Sales() {
   const [catagory, setCatagory] = useState<any>([]);
   const [items, setItems] = useState<any>([]);
-
+  const [selectedItems, setSelectedItems] = useState<any>([]);
+  const [selectedSizes, setSelectedSizes] = useState<{ [key: string]: string[] }>({});
 
   useEffect(() => {
     const fetchCatagory = async () => {
@@ -42,12 +47,82 @@ function Sales() {
       console.error("Error fetching items for category:", error);
     }
   };
+  const handleAddToOrder = (item: any) => {
+    const selectedItemSizes = selectedSizes[item._id] || [];
+    const selectedVariant = item.variants.find((v: any) => v.size === selectedItemSizes[0]);
+    const price = selectedVariant ? selectedVariant.price : 0;
+  
+    if (!selectedItems.some((selectedItem: any) => selectedItem._id === item._id)) {
+      setSelectedItems((prev: any) => [...prev, { ...item, selectedSizes: selectedItemSizes, quantity: 1, price }]);
+      setSelectedSizes((prevSizes) => {
+        const updatedSizes = { ...prevSizes };
+        return updatedSizes;
+      });
+    }
+  };
+  const handleIncreaseQuantity = (itemId: string) => {
+    setSelectedItems((prevItems: any) =>
+      prevItems.map((item: any) =>
+        item._id === itemId ? { ...item, quantity: item.quantity + 1 } : item
+      )
+    );
+  };
+  
+  const handleDecreaseQuantity = (itemId: string) => {
+    setSelectedItems((prevItems: any) =>
+      prevItems.map((item: any) =>
+        item._id === itemId && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item
+      )
+    );
+  };
+  const handleSizeClick = (itemId: string, size: string) => {
+    const item = items.find((i: any) => i._id === itemId);
+    if (item) {
+      const selectedVariant = item.variants.find((v: any) => v.size === size);
+      const price = selectedVariant ? selectedVariant.price : 0;
+      
+      setSelectedSizes((prevSizes) => {
+        const currentSizes = prevSizes[itemId] || [];
+        const updatedSizes = currentSizes.includes(size)
+          ? currentSizes.filter((s) => s !== size)
+          : [...currentSizes, size];
+        return { ...prevSizes, [itemId]: updatedSizes };
+      });
+      
+      setSelectedItems((prevItems: any) =>
+        prevItems.map((i: any) =>
+          i._id === itemId
+            ? { ...i, selectedSize: size, price }
+            : i
+        )
+      );
+    }
+  };
+  const handleRemoveFromOrder = (itemId: string) => {
+    setSelectedItems((prevItems: any) =>
+      prevItems.filter((item: any) => item._id !== itemId)
+    );
+    setSelectedSizes((prevSizes) => {
+      const updatedSizes = { ...prevSizes };
+      delete updatedSizes[itemId];
+      return updatedSizes;
+    });
+  };
+  const calculateSubtotal = () => {
+    return selectedItems.reduce((total: number, item: any) => total + (item.price || 0) * item.quantity, 0);
+  };
+  
+  const calculateTotal = () => {
+    const subtotal = calculateSubtotal();
+    const tax = subtotal * 0.10; // Assuming a 10% tax rate
+    return subtotal + tax;
+  };
 
   return (
     <>
-      <div className="flex w-full justify-between">
-        <div className="flex flex-col gap-[4rem]   justify-between w-[70%]">
-          <div className="grid grid-cols-7 gap-x-4 gap-y-4  w-full">
+      <div className="flex justify-between flex-wrap pt-4">
+        <div className="flex flex-col md:gap-[3rem] order-2 md:order-1 basis-full md:basis-[70%]">
+          <div className="grid grid-cols-7 gap-x-4 gap-y-4 w-full">
             {catagory.map((cat: any) => (
               <div onClick={() => handleItemClick(cat._id)}>
                 <Card
@@ -59,7 +134,7 @@ function Sales() {
             ))}
           </div>
 
-          {/* <div className="flex flex-row gap-4   w-full">
+          {/* <div className="flex flex-row gap-4 w-full">
             {selectedItemValueByCategoryId.map((item: any) => (
               <div key={item._id}>
                 <div className="border min-w-36 max-w-36">
@@ -76,26 +151,115 @@ function Sales() {
             ))}
           </div> */}
 
-          <div className="flex flex-row gap-4   w-full">
+          
+          <div className="flex flex-wrap gap-2">
             {items.map((item: any) => (
-              <div key={item._id}>
-                <div className="border min-w-36 max-w-36">
+              <div key={item._id} className="md:basis-[48%] lg:basis-[23%]">
+                <div className="border rounded-xl shadow-lg p-4 lg:px-6 flex flex-col justify-center items-center gap-1">
                   <img
-                    className="w-full rounded-tl-[6px] rounded-tr-[6px]  min-h-20 max-h-20 bg-contain"
-                    src={item?.image || defaultimage}
+                    className="rounded-full object-cover bg-gray-100 h-[80px] w-[80px]"
+                    src={item?.image || default2}
                     alt={item.name}
                   />
-                  <div className="px-4 py-1">
-                    <span className="font-bold">{item.name}</span>
+                  <div className="basis-full">
+                    <span className="font-bold text-lg">{item.name}</span>
+                  </div>
+                  <div className="flex gap-4 items-center basis-full">
+                    
+                      <span className="text-2xl text-disabled">
+                        {item.variants.map((variant: any) => (
+                          <React.Fragment key={variant._id}>
+                            <span
+                              className={`capitalize cursor-pointer ${selectedSizes[item._id]?.includes(variant.size) ? 'font-bold text-primary' : ''}`}
+                              onClick={() => !selectedItems.some((selectedItem: any) => selectedItem._id === item._id) && handleSizeClick(item._id, variant.size)}
+                            >
+                              {variant.size.charAt(0)}
+                            </span>
+                            <span className="mx-1">|</span>
+                          </React.Fragment>
+                        ))}
+                      </span>
+                      <Button 
+                        label={selectedItems.some((selectedItem: any) => selectedItem._id === item._id) ? "Added" : "Add"} 
+                        className={`px-4 !py-1 ${selectedItems.some((selectedItem: any) => selectedItem._id === item._id) ? "!bg-success" : "!bg-disabled"} text-white rounded-md`}
+                        onClick={() => handleAddToOrder(item)}
+                        disabled={selectedItems.some((selectedItem: any) => selectedItem._id === item._id)}
+                      />
                   </div>
                 </div>
               </div>
             ))}
           </div>
-          <div></div>
+        </div>
+        <div className="basis-full order-1 md:order-2 md:basis-[30%] border-l border-gray-100">
+          <div className="shadow-lg">
+            <div className="flex justify-between items-center rounded-xl shadow-md p-4">
+              <span className="font-semibold text-lg">New Order Bill</span>
+              <span className="text-disabled text-lg">Wednesday 28 August 2024</span>
+            </div>
+            <div className="p-4">
+              <div className="flex flex-col gap-2 mb-4 h-[385px] overflow-auto border p-2">
+                {selectedItems.map((item: any) => (
+                  <div key={item._id} className="bg-lightdisable flex justify-between rounded-md px-4 py-2 items-center relative">
+                    <div className="absolute top-1 right-1 bg-white rounded-[50%] px-1 cursor-pointer">
+                      <FontAwesomeIcon icon={faClose} onClick={() => handleRemoveFromOrder(item._id)} />
+                    </div>
+                    <div className="basis-[27%] rounded-[50%]">
+                      <div className="w-[70px] h-[70px]">
+                        <img
+                          src={item.image || default2}
+                          alt={item.name}
+                          className="rounded-[50%] w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-col basis-[37%]">
+                      <div>{item.name} {item.selectedSizes.length > 0 && ` (${item.selectedSizes.join(', ')})`}</div>
+                      <div>Rs. {item.price || "00.00"}</div>
+                    </div>
+                    <div className="basis-[37%] flex justify-center items-center">
+                      <div className="bg-white rounded-[20px] px-4 py-2 flex gap-2">
+                        <button
+                          className="bg-primary text-white px-2 pb-1 rounded-[50%]"
+                          onClick={() => handleDecreaseQuantity(item._id)}
+                        >
+                          -
+                        </button>
+                        <span className="mx-2">{item.quantity}</span>
+                        <button
+                          className="bg-primary text-white px-2 rounded-[50%]"
+                          onClick={() => handleIncreaseQuantity(item._id)}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex justify-between mb-2">
+                <span className="font-bold">Sub Total</span>
+                <span className="text-success">Rs.{calculateSubtotal().toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between mb-2">
+                <span className="font-bold">Tax 10% (VAT Included)</span>
+                <span className="text-success">Rs.{(calculateSubtotal() * 0.10).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between mb-2">
+                <span className="font-bold">Total</span>
+                <span className="text-success">Rs.{calculateTotal().toFixed(2)}</span>
+              </div>
+              <div className="">
+              <Button 
+                label={"Place Order"} 
+                className={` text-white rounded-md`}
+              />
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="w-[30%] bg-primary">sad</div>
       </div>
     </>
   );

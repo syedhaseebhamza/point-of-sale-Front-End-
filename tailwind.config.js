@@ -8,6 +8,8 @@ export default {
         hover_primary: "#FADDC7",
         secondary: "#0C2D57",
         disabled: "#AFAFAF",
+        lightdisable: "#ebeaea",
+        success: "#3fc712"
 
       },
     },
