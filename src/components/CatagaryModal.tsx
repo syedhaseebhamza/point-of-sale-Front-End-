@@ -137,12 +137,20 @@ function CatagaryModal({
 
             <div>Upload image</div>
             {imagePreview ? (
-              <div className="flex justify-center items-center min-h-[60px] max-h-[60px] min-w-[60px] max-w-[60px] mt-[13px] border border-[gray] rounded-full">
+              <div className="relative flex justify-center items-center min-h-[60px] max-h-[60px] min-w-[60px] max-w-[60px] mt-[13px] border border-gray-300 rounded-full">
                 <img
                   src={imagePreview}
                   alt="Selected"
-                  className="min-h-[40px]  max-h-[40px] min-w-[40px] max-w-[40px] object-cover rounded-full"
+                  className="min-h-[40px] max-h-[40px] min-w-[40px] max-w-[40px] object-cover rounded-full"
                 />
+                {isEditMode && (
+                  <label
+                    className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50 rounded-full opacity-0 hover:opacity-100 cursor-pointer"
+                    htmlFor="campaignPicture"
+                  >
+                    <PlusIcon className="text-white text-[24px]" />
+                  </label>
+                )}
               </div>
             ) : (
               <label

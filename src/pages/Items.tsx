@@ -27,7 +27,7 @@ const actions = [
 function Items() {
   const [showItemModal, setShowItemModal] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState("");
-  const [isEditModa, setIsEditModa] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [toast, setToast] = useState<{
     type: "success" | "error";
     message: string;
@@ -35,14 +35,14 @@ function Items() {
   const [catagory, setCatagory] = useState([]);
   const [items, setItems] = useState<any>([]);
   const openItemModal = () => {
-    setIsEditModa(false);
+    setIsEditMode(false);
     setSelectedItemId("");
     setShowItemModal(true);
   };
 
   const openItemEditModal = (itemId: string) => {
     setSelectedItemId(itemId);
-    setIsEditModa(true);
+    setIsEditMode(true);
     setShowItemModal(true);
   };
 
@@ -179,7 +179,7 @@ function Items() {
           selectedItemId={selectedItemId}
           items={items}
           onItemUpdated={handelUpdateItem}
-          isEditModa={isEditModa}
+          isEditMode={isEditMode}
         />
       </Modal>
 
