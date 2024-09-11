@@ -15,7 +15,7 @@ function ItemModal({
   selectedItemId,
   items,
   onItemUpdated,
-  isEditModa,
+  isEditMode,
 }: any) {
   const [selectedValue, setSelectedValue] = useState("");
   const [selectedCatagoryId, setSelectedCatagoryId] = useState("");
@@ -118,7 +118,7 @@ function ItemModal({
   };
 
   useEffect(() => {
-    if (isEditModa && selectedItemId) {
+    if (isEditMode && selectedItemId) {
       const selectedItem = items.find(
         (item: any) => item._id === selectedItemId
       );
@@ -133,7 +133,7 @@ function ItemModal({
         setVariants(selectedItem.variants);
       }
     }
-  }, [isEditModa, selectedItemId, items]);
+  }, [isEditMode, selectedItemId, items]);
 
   return (
     <div>
@@ -234,7 +234,7 @@ function ItemModal({
         </div>
         <div className="flex items-end justify-end ">
           <Button
-            onClick={isEditModa ? handleSave : handleSubmit}
+            onClick={isEditMode ? handleSave : handleSubmit}
             label="Save"
             className="px-[4rem]"
           />
