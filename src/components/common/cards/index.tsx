@@ -4,25 +4,20 @@ import defaultimage from "/defaultimge.png";
 interface CardProps {
   image?: string;
   name?: string;
-  description?: string;
 }
 
-function Card({ image, name, description }: CardProps) {
-  console.log("image", image);
+function Card({ image, name }: CardProps) {
 
   return (
-    <div className="cursor-pointer max-w-48 min-w-48  bg-white border border-gray-200 rounded-lg shadow-xl ">
-      <div className="flex justify-center ">
+    <div className="cursor-pointer py-4 px-4 bg-white border border-gray-600 rounded-[48px]   shadow-md shadow-gray-600 hover:scale-[1.09]">
+      <div className="flex items-center justify-between">
         <img
-          className=" w-full min-h-24  max-h-24 object-cover"
+          className="max-h-12 max-w-12 min-w-12 min-h-12 rounded-full object-cover"
           src={image === null ? defaultimage : image}
           alt={defaultimage}
         />
-      </div>
-      <div className="py-2 px-4">
-        <h5 className="text-xl font-bold tracking-tight">{name}</h5>
 
-        <p className="font-normal truncate">{description}</p>
+        <h5 className="text-xl font-bold tracking-tight truncate">{name}</h5>
       </div>
     </div>
   );

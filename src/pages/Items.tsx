@@ -7,9 +7,12 @@ import { getAllItem, handelDeleteItem } from "@/app/features/Item/itemApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import ToastMessage from "@/components/common/toast";
+import defaultimage from "/defaultimge.png";
+
 const headers = [
   { label: "Category Name", key: "categoryName" },
-  { label: "Name", key: "name" },
+  { label: "Product Name", key: "name" },
+  { label: "Product Image", key: "image" },
   { label: "Retail Price", key: "retailPrice" },
   { label: "Size", key: "size" },
   { label: "Sale Price", key: "salePrice" },
@@ -128,6 +131,14 @@ function Items() {
                       {item.variants.map((variant: any) => (
                         <div key={variant._id}>{variant?.price} (Rs)</div>
                       ))}
+                    </div>
+                  ) : header.key === "image" ? (
+                    <div className="flex justify-start">
+                      <img
+                        className="border object-cover rounded-full h-20 w-20"
+                        src={item?.image || defaultimage}
+                        alt="img"
+                      />{" "}
                     </div>
                   ) : (
                     item[header.key] || ""

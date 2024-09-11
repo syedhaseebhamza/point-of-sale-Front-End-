@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import Input from "./common/inputField";
 import Button from "./common/button";
 import {
@@ -19,6 +19,8 @@ function ItemModal({
 }: any) {
   const [selectedValue, setSelectedValue] = useState("");
   const [selectedCatagoryId, setSelectedCatagoryId] = useState("");
+  const [itemPicture, setItemPicture] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [variants, setVariants] = useState([{ size: "", price: "" }]);
   const [formValues, setFormValues] = useState({
     categoryName: selectedValue,
@@ -38,7 +40,13 @@ function ItemModal({
     }));
     setIsOpen(false);
   };
-
+  const handleItemPicture = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      setItemPicture(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
   const handelItemFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormValues({
@@ -71,21 +79,24 @@ function ItemModal({
 
   const handleSubmit = async () => {
     try {
-      const updatedFormValues = {
-        ...formValues,
-        categoryName: selectedValue,
-        variants,
-      };
-      const response = await handelAddNewItem(
-        updatedFormValues,
-        selectedCatagoryId
-      );
+      const formData = new FormData();
+      formData.append("categoryName", selectedValue);
+      formData.append("name", formValues.name);
+      formData.append("retailPrice", formValues.retailPrice);
+      formData.append("variants", JSON.stringify(variants));
+      
+      if (itemPicture) {
+        formData.append("image", itemPicture);
+      }
+  
+      const response = await handelAddNewItem(formData, selectedCatagoryId);
+      
       if (response.message === "Item created successfully") {
         onItemAdded(response.newItem);
       } else {
         onItemAdded(response.item);
       }
-
+  
       setToast({
         type: "success",
         message: "Item added successfully",
@@ -100,22 +111,30 @@ function ItemModal({
       closeItemModal();
     }
   };
+  
 
   const handleSave = async () => {
-    const data = {
-      categoryName: formValues.categoryName,
-      name: formValues.name,
-      retailPrice: formValues.retailPrice,
-      variants: variants,
-    };
-    try {
-      await handelUpdateItem(data, selectedItemId);
+    
+      const formData = new FormData();
+      formData.append("categoryName", formValues.categoryName);
+      formData.append("name", formValues.name);
+      formData.append("retailPrice", formValues.retailPrice);
+      formData.append("variants", JSON.stringify(variants));
+      
+      if (itemPicture) {
+        formData.append("image", itemPicture);
+      }
+      try {
+        
+      await handelUpdateItem(formData, selectedItemId);
+      
       closeItemModal();
       onItemUpdated();
     } catch (error) {
       console.error("Error updating item:", error);
     }
   };
+  
 
   useEffect(() => {
     if (isEditMode && selectedItemId) {
@@ -128,6 +147,7 @@ function ItemModal({
           name: selectedItem.name,
           retailPrice: selectedItem.retailPrice,
         });
+        setImagePreview(selectedItem.image || null);
         setSelectedCatagoryId(selectedItem.catagoryId);
         setSelectedValue(selectedItem.categoryName);
         setVariants(selectedItem.variants);
@@ -186,11 +206,41 @@ function ItemModal({
           />
           <Input
             value={formValues.retailPrice}
+            type="number"
             name="retailPrice"
             placeholder="Reail Price"
             label="Reail Price"
             onChange={handelItemFormChange}
           />
+           <div>
+            <input
+              onChange={handleItemPicture}
+              accept="image/*"
+              id="itemPicture"
+              hidden
+              type="file"
+            />
+
+            <div>Upload image</div>
+            {imagePreview ? (
+              <div className="flex justify-center items-center min-h-[60px] max-h-[60px] min-w-[60px] max-w-[60px] mt-[13px] border border-[gray] rounded-full">
+                <img
+                  src={imagePreview}
+                  alt="Selected"
+                  className="min-h-[40px]  max-h-[40px] min-w-[40px] max-w-[40px] object-cover rounded-full"
+                />
+              </div>
+            ) : (
+              <label
+                className="flex mt-[10px] justify-center rounded-full items-center cursor-pointer bg-[#E8E8E8] w-[60px] h-[60px]"
+                htmlFor="itemPicture"
+              >
+                <div className="flex justify-center rounded-full  min-h-[40px] max-h-[40px] min-w-[40px] max-w-[40px] border-[gray] items-center text-[40px]">
+                  <PlusIcon />
+                </div>
+              </label>
+            )}
+          </div>
         </div>
         <div className="flex flex-col border-t-2  pt-[1rem]">
           <div className="text-[20px] font-medium ">Varients</div>
@@ -216,6 +266,7 @@ function ItemModal({
               />
               <Input
                 name="price"
+                type="number"
                 placeholder="Sale Price"
                 label="Sale Price"
                 value={variant.price}

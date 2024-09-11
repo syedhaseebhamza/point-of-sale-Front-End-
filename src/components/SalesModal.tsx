@@ -165,9 +165,7 @@ function SalesModal({ catagory, items }: any) {
         <div className="flex justify-end gap-4 pt-[1rem]">
           <Button
             label="Check out"
-            onClick={() => {
-              console.log(formEntries);
-            }}
+
           />
           <Button
             label="Add New"
