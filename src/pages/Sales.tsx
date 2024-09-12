@@ -50,6 +50,7 @@ function Sales() {
       console.error("Error fetching items for category:", error);
     }
   };
+
   const handleAddToOrder = (item: any) => {
     const selectedItemSizes = selectedSizes[item._id] || [];
 
@@ -102,7 +103,7 @@ function Sales() {
       )
     );
   };
-
+  
   const handleDecreaseQuantity = (itemId: string) => {
     setSelectedItems((prevItems: any) =>
       prevItems.map((item: any) =>
@@ -133,13 +134,29 @@ function Sales() {
       );
     }
   };
-  const handleRemoveFromOrder = (itemId: string) => {
-    setSelectedItems((prevItems: any) =>
-      prevItems.filter((item: any) => item._id !== itemId)
-    );
+  const handleRemoveFromOrder = (itemId: string, size?: string) => {
+    setSelectedItems((prevItems: any) => {
+      if (size) {
+        // Remove only the specific size of the item
+        return prevItems.filter((item: any) => item._id !== itemId || !item.selectedSizes.includes(size));
+      } else {
+        // Remove all sizes of the item
+        return prevItems.filter((item: any) => !item._id.startsWith(itemId));
+      }
+    });
+    
     setSelectedSizes((prevSizes) => {
       const updatedSizes = { ...prevSizes };
-      delete updatedSizes[itemId];
+      if (size) {
+        // Remove the specific size from the selectedSizes
+        updatedSizes[itemId] = updatedSizes[itemId]?.filter((s: string) => s !== size);
+        if (updatedSizes[itemId]?.length === 0) {
+          delete updatedSizes[itemId];
+        }
+      } else {
+        // Remove all sizes for the item
+        delete updatedSizes[itemId];
+      }
       return updatedSizes;
     });
   };
@@ -303,13 +320,13 @@ function Sales() {
               <div className="flex flex-col gap-2 mb-4 h-[450px] max-h-[450px] overflow-auto border p-2">
                 {selectedItems.map((item: any) => (
                   <div
-                    key={item._id}
+                    key={`${item._id}-${item.selectedSizes[0]}`}
                     className="bg-lightdisable flex justify-between rounded-md px-4 py-2 items-center relative"
                   >
                     <div className="absolute top-1 right-1 bg-white rounded-[50%] px-1 cursor-pointer">
                       <FontAwesomeIcon
                         icon={faClose}
-                        onClick={() => handleRemoveFromOrder(item._id)}
+                        onClick={() => handleRemoveFromOrder(item._id, item.selectedSizes[0])}
                       />
                     </div>
                     <div className="basis-[27%] rounded-[50%]">
