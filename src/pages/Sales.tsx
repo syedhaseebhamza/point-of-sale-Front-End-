@@ -162,7 +162,6 @@ function Sales() {
   };
   const calculateSubtotal = () => {
     return selectedItems.reduce((total: number, item: any) => {
-      // Calculate price for each size selected
       const itemPrice = item.variants.reduce(
         (totalPrice: number, variant: any) => {
           if (item.selectedSizes.includes(variant.size)) {
