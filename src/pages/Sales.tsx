@@ -310,7 +310,7 @@ function Sales() {
         </div>
         <div className="basis-full order-1 md:order-2 md:basis-[30%] border-l border-gray-100">
           <div className="shadow-lg">
-            <div className="flex justify-between items-center rounded-xl shadow-md p-4">
+            <div className="flex  justify-between items-center rounded-xl shadow-md p-4">
               <span className="font-semibold text-lg">New Order Bill</span>
               <span className="text-disabled text-lg">
                 Wednesday 28 August 2024
