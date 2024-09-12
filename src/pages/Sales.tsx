@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getAllCatagory } from "@/app/features/catagory/catagoryApi";
 import { getItemByCategoryId } from "@/app/features/sales/salesApi";
 import Card from "@/components/common/cards";
-import defaultimage from "../Images/default_rectangle.jpg";
-import default2 from "/burgerphoto.jpg"
+import default2 from "/burgerphoto.jpg";
 import { getAllItem } from "@/app/features/Item/itemApi";
 import Button from "@/components/common/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,7 +13,9 @@ function Sales() {
   const [catagory, setCatagory] = useState<any>([]);
   const [items, setItems] = useState<any>([]);
   const [selectedItems, setSelectedItems] = useState<any>([]);
-  const [selectedSizes, setSelectedSizes] = useState<{ [key: string]: string[] }>({});
+  const [selectedSizes, setSelectedSizes] = useState<{
+    [key: string]: string[];
+  }>({});
 
   useEffect(() => {
     const fetchCatagory = async () => {
@@ -87,11 +88,13 @@ function Sales() {
       )
     );
   };
-  
+
   const handleDecreaseQuantity = (itemId: string) => {
     setSelectedItems((prevItems: any) =>
       prevItems.map((item: any) =>
-        item._id === itemId && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item
+        item._id === itemId && item.quantity > 1
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
       )
     );
   };
@@ -100,7 +103,7 @@ function Sales() {
     if (item) {
       const selectedVariant = item.variants.find((v: any) => v.size === size);
       const price = selectedVariant ? selectedVariant.price : 0;
-      
+
       setSelectedSizes((prevSizes) => {
         const currentSizes = prevSizes[itemId] || [];
         const updatedSizes = currentSizes.includes(size)
@@ -108,12 +111,10 @@ function Sales() {
           : [...currentSizes, size];
         return { ...prevSizes, [itemId]: updatedSizes };
       });
-      
+
       setSelectedItems((prevItems: any) =>
         prevItems.map((i: any) =>
-          i._id === itemId
-            ? { ...i, selectedSize: size, price }
-            : i
+          i._id === itemId ? { ...i, selectedSize: size, price } : i
         )
       );
     }
@@ -141,10 +142,24 @@ function Sales() {
       return total + (itemPrice || 0) * item.quantity;
     }, 0);
   };
+  // const handlePlaceOrder = () => {
+
+  //   const simplifiedItems = selectedItems.map(item => ({
+  //     categoryName: item.categoryName,
+  //     name: item.name,
+  //     image: item.image,
+  //     price: item.price,
+  //     quantity: item.quantity,
+  //     selectedSizes: item.selectedSizes,
+  //   }));
   
+
+  //   console.log(simplifiedItems);
+  // };
+
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
-    const tax = subtotal * 0.10; // Assuming a 10% tax rate
+    const tax = subtotal * 0.1; // Assuming a 10% tax rate
     return subtotal + tax;
   };
 
@@ -181,7 +196,6 @@ function Sales() {
             ))}
           </div> */}
 
-          
           <div className="flex flex-wrap gap-2">
             {items.map((item: any) => (
               <div key={item._id} className="md:basis-[48%] lg:basis-[23%]">
@@ -226,14 +240,22 @@ function Sales() {
           <div className="shadow-lg">
             <div className="flex justify-between items-center rounded-xl shadow-md p-4">
               <span className="font-semibold text-lg">New Order Bill</span>
-              <span className="text-disabled text-lg">Wednesday 28 August 2024</span>
+              <span className="text-disabled text-lg">
+                Wednesday 28 August 2024
+              </span>
             </div>
             <div className="p-4">
-              <div className="flex flex-col gap-2 mb-4 h-[385px] overflow-auto border p-2">
+              <div className="flex flex-col gap-2 mb-4 h-[650px] max-h-[650px] overflow-auto border p-2">
                 {selectedItems.map((item: any) => (
-                  <div key={item._id} className="bg-lightdisable flex justify-between rounded-md px-4 py-2 items-center relative">
+                  <div
+                    key={item._id}
+                    className="bg-lightdisable flex justify-between rounded-md px-4 py-2 items-center relative"
+                  >
                     <div className="absolute top-1 right-1 bg-white rounded-[50%] px-1 cursor-pointer">
-                      <FontAwesomeIcon icon={faClose} onClick={() => handleRemoveFromOrder(item._id)} />
+                      <FontAwesomeIcon
+                        icon={faClose}
+                        onClick={() => handleRemoveFromOrder(item._id)}
+                      />
                     </div>
                     <div className="basis-[27%] rounded-[50%]">
                       <div className="w-[70px] h-[70px]">
@@ -279,26 +301,33 @@ function Sales() {
 
               <div className="flex justify-between mb-2">
                 <span className="font-bold">Sub Total</span>
-                <span className="text-success">Rs.{calculateSubtotal().toFixed(2)}</span>
+                <span className="text-success">
+                  Rs.{calculateSubtotal().toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between mb-2">
                 <span className="font-bold">Tax 10% (VAT Included)</span>
-                <span className="text-success">Rs.{(calculateSubtotal() * 0.10).toFixed(2)}</span>
+                <span className="text-success">
+                  Rs.{(calculateSubtotal() * 0.1).toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between mb-2">
                 <span className="font-bold">Total</span>
-                <span className="text-success">Rs.{calculateTotal().toFixed(2)}</span>
+                <span className="text-success">
+                  Rs.{calculateTotal().toFixed(2)}
+                </span>
               </div>
-              <div className="">
-              <Button 
-                label={"Place Order"} 
-                className={` text-white rounded-md`}
-              />
+              <div className="flex w-full gap-2">
+                <Button
+                  label={"Place Order"}
+                  className={` text-white rounded-md w-1/2`}
+                  // onClick={handlePlaceOrder}
+                />
+                <Button label={"Draft"} className={` text-white rounded-md w-1/2`} />
               </div>
             </div>
           </div>
         </div>
-
       </div>
     </>
   );
