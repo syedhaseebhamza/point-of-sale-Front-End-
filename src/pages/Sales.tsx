@@ -7,6 +7,7 @@ import { getAllItem } from "@/app/features/Item/itemApi";
 import Button from "@/components/common/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
+import Swal from 'sweetalert2';
 
 function Sales() {
   const [catagory, setCatagory] = useState<any>([]);
@@ -50,18 +51,30 @@ function Sales() {
   };
   const handleAddToOrder = (item: any) => {
     const selectedItemSizes = selectedSizes[item._id] || [];
-    const selectedVariant = item.variants.find(
-      (v: any) => v.size === selectedItemSizes[0]
-    );
-    const price = selectedVariant ? selectedVariant.price : 0;
-
-    if (
-      !selectedItems.some((selectedItem: any) => selectedItem._id === item._id)
-    ) {
-      setSelectedItems((prev: any) => [
-        ...prev,
-        { ...item, selectedSizes: selectedItemSizes, quantity: 1, price },
-      ]);
+    
+    if (selectedItemSizes.length === 0) {
+      Swal.fire({
+        title: "Please select at least one size.",
+        icon: "warning",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
+      return;
+    }
+  
+    // Calculate total price for all selected sizes
+    const totalItemPrice = item.variants.reduce((total: number, variant: any) => {
+      if (selectedItemSizes.includes(variant.size)) {
+        return total + variant.price;
+      }
+      return total;
+    }, 0);
+  
+    if (!selectedItems.some((selectedItem: any) => selectedItem._id === item._id)) {
+      setSelectedItems((prev: any) => [...prev, { ...item, selectedSizes: selectedItemSizes, quantity: 1, price: totalItemPrice }]);
       setSelectedSizes((prevSizes) => {
         const updatedSizes = { ...prevSizes };
         return updatedSizes;
@@ -117,25 +130,32 @@ function Sales() {
     });
   };
   const calculateSubtotal = () => {
-    return selectedItems.reduce(
-      (total: number, item: any) => total + (item.price || 0) * item.quantity,
-      0
-    );
+    return selectedItems.reduce((total: number, item: any) => {
+      // Calculate price for each size selected
+      const itemPrice = item.variants.reduce((totalPrice: number, variant: any) => {
+        if (item.selectedSizes.includes(variant.size)) {
+          return totalPrice + variant.price;
+        }
+        return totalPrice;
+      }, 0);
+      
+      return total + (itemPrice || 0) * item.quantity;
+    }, 0);
   };
-  const handlePlaceOrder = () => {
-    // Create a simplified array of items
-    const simplifiedItems = selectedItems.map(item => ({
-      categoryName: item.categoryName,
-      name: item.name,
-      image: item.image,
-      price: item.price,
-      quantity: item.quantity,
-      selectedSizes: item.selectedSizes,
-    }));
+  // const handlePlaceOrder = () => {
+
+  //   const simplifiedItems = selectedItems.map(item => ({
+  //     categoryName: item.categoryName,
+  //     name: item.name,
+  //     image: item.image,
+  //     price: item.price,
+  //     quantity: item.quantity,
+  //     selectedSizes: item.selectedSizes,
+  //   }));
   
-    // Log the simplified array in the console
-    console.log(simplifiedItems);
-  };
+
+  //   console.log(simplifiedItems);
+  // };
 
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
@@ -186,51 +206,30 @@ function Sales() {
                     alt={item.name}
                   />
                   <div className="basis-full">
-                    <span className="font-bold text-lg">{item.name}</span>
+                    <span className="font-bold text-lg capitalize">{item.name}</span>
                   </div>
                   <div className="flex gap-4 items-center basis-full">
-                    <span className="text-2xl text-disabled">
-                      {item.variants.map((variant: any) => (
-                        <React.Fragment key={variant._id}>
-                          <span
-                            className={`capitalize cursor-pointer ${
-                              selectedSizes[item._id]?.includes(variant.size)
-                                ? "font-bold text-primary"
-                                : ""
-                            }`}
-                            onClick={() =>
-                              !selectedItems.some(
-                                (selectedItem: any) =>
-                                  selectedItem._id === item._id
-                              ) && handleSizeClick(item._id, variant.size)
-                            }
-                          >
-                            {variant.size.charAt(0)}
-                          </span>
-                          <span className="mx-1">|</span>
-                        </React.Fragment>
-                      ))}
-                    </span>
-                    <Button
-                      label={
-                        selectedItems.some(
-                          (selectedItem: any) => selectedItem._id === item._id
-                        )
-                          ? "Added"
-                          : "Add"
-                      }
-                      className={`px-4 !py-1 ${
-                        selectedItems.some(
-                          (selectedItem: any) => selectedItem._id === item._id
-                        )
-                          ? "!bg-success"
-                          : "!bg-disabled"
-                      } text-white rounded-md`}
-                      onClick={() => handleAddToOrder(item)}
-                      disabled={selectedItems.some(
-                        (selectedItem: any) => selectedItem._id === item._id
-                      )}
-                    />
+                    
+                      <span className="text-2xl text-disabled">
+                        {item.variants.map((variant: any, index: number) => (
+                          <React.Fragment key={variant._id}>
+                            <span
+                              className={`capitalize cursor-pointer ${selectedSizes[item._id]?.includes(variant.size) ? 'font-bold text-primary' : ''}`}
+                              onClick={() => !selectedItems.some((selectedItem: any) => selectedItem._id === item._id) && handleSizeClick(item._id, variant.size)}
+                            >
+                              {variant.size.charAt(0)}
+                            </span>
+                            {index < item.variants.length - 1 && <span className="mx-1">|</span>}
+                          </React.Fragment>
+                        ))}
+                      </span>
+
+                      <Button 
+                        label={selectedItems.some((selectedItem: any) => selectedItem._id === item._id) ? "Added" : "Add"} 
+                        className={`px-4 !py-1 ${selectedItems.some((selectedItem: any) => selectedItem._id === item._id) ? "!bg-success" : "!bg-disabled"} text-white rounded-md`}
+                        onClick={() => handleAddToOrder(item)}
+                        disabled={selectedItems.some((selectedItem: any) => selectedItem._id === item._id) || selectedSizes[item._id]?.length === 0}
+                      />
                   </div>
                 </div>
               </div>
@@ -268,24 +267,28 @@ function Sales() {
                       </div>
                     </div>
                     <div className="flex flex-col basis-[37%]">
+                      <div className="capitalize">{item.name} {item.selectedSizes.length > 0 && ` (${item.selectedSizes.map((size: string) => size.charAt(0)).join(', ')})`}</div>
                       <div>
-                        {item.name}{" "}
-                        {item.selectedSizes.length > 0 &&
-                          ` (${item.selectedSizes.join(", ")})`}
+                        {/* Rs. {item.price || "00.00"} */}
+                        Rs. {item.selectedSizes.length > 0 
+                          ? item.selectedSizes.reduce((total: number, size: string) => {
+                              const selectedVariant = item.variants.find((variant: any) => variant.size === size);
+                              return total + (selectedVariant ? selectedVariant.price : 0);
+                            }, 0)
+                          : "00.00"}
                       </div>
-                      <div>Rs. {item.price || "00.00"}</div>
                     </div>
                     <div className="basis-[37%] flex justify-center items-center">
                       <div className="bg-white rounded-[20px] px-4 py-2 flex gap-2">
                         <button
-                          className="bg-primary text-white px-2 pb-1 rounded-[50%]"
+                          className="bg-primary text-center w-6 h-6 text-white rounded-[50%]"
                           onClick={() => handleDecreaseQuantity(item._id)}
                         >
                           -
                         </button>
                         <span className="mx-2">{item.quantity}</span>
                         <button
-                          className="bg-primary text-white px-2 rounded-[50%]"
+                          className="bg-primary text-white w-6 h-6 text-center rounded-[50%]"
                           onClick={() => handleIncreaseQuantity(item._id)}
                         >
                           +
@@ -318,7 +321,7 @@ function Sales() {
                 <Button
                   label={"Place Order"}
                   className={` text-white rounded-md w-1/2`}
-                  onClick={handlePlaceOrder}
+                  // onClick={handlePlaceOrder}
                 />
                 <Button label={"Draft"} className={` text-white rounded-md w-1/2`} />
               </div>

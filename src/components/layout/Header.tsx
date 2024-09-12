@@ -31,7 +31,7 @@ const Header: FC<HeaderProps> = ({ sidebarWidth, setSidebarWidth }) => {
         )}
 
         <div className="font-bold text-2xl">
-              Welcome to CodeSync Resturent
+              Welcome to CodeSync Restaurant
       </div>
       </div>
 
