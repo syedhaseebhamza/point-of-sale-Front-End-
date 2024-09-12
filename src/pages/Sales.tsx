@@ -317,7 +317,7 @@ function Sales() {
               </span>
             </div>
             <div className="p-4 min-h-screen">
-              <div className="flex flex-col gap-2 mb-4 h-[450px] max-h-[450px] overflow-auto border p-2">
+              <div className="flex flex-col  gap-2 mb-4 h-[450px] max-h-[450px] overflow-auto border p-2">
                 {selectedItems.map((item: any) => (
                   <div
                     key={`${item._id}-${item.selectedSizes[0]}`}
