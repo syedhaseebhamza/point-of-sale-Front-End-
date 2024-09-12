@@ -53,7 +53,7 @@ function Sales() {
 
   const handleAddToOrder = (item: any) => {
     const selectedItemSizes = selectedSizes[item._id] || [];
-
+    
     if (selectedItemSizes.length === 0) {
       Swal.fire({
         title: "Please select at least one size.",
@@ -66,35 +66,28 @@ function Sales() {
       });
       return;
     }
-
-    // Calculate total price for all selected sizes
-    const totalItemPrice = item.variants.reduce(
-      (total: number, variant: any) => {
-        if (selectedItemSizes.includes(variant.size)) {
-          return total + variant.price;
-        }
-        return total;
-      },
-      0
-    );
-
-    if (
-      !selectedItems.some((selectedItem: any) => selectedItem._id === item._id)
-    ) {
-      setSelectedItems((prev: any) => [
-        ...prev,
-        {
-          ...item,
-          selectedSizes: selectedItemSizes,
-          quantity: 1,
-          price: totalItemPrice,
-        },
-      ]);
-      setSelectedSizes((prevSizes) => {
-        const updatedSizes = { ...prevSizes };
-        return updatedSizes;
-      });
-    }
+  
+    // Create an entry for each selected size
+    const newItems = selectedItemSizes.map((size: string) => {
+      const selectedVariant = item.variants.find((v: any) => v.size === size);
+      const price = selectedVariant ? selectedVariant.price : 0;
+  
+      return {
+        _id: `${item._id}-${size}`,
+        categoryName: item.categoryName,
+        name: item.name,
+        image: item.image,
+        price,
+        quantity: 1,
+        selectedSizes: [size], // Only one size per item in this case
+      };
+    });
+  
+    setSelectedItems((prevItems: any) => {
+      const filteredItems = prevItems.filter((i: any) => !i._id.startsWith(item._id));
+      
+      return [...filteredItems, ...newItems];
+    });
   };
   const handleIncreaseQuantity = (itemId: string) => {
     setSelectedItems((prevItems: any) =>
@@ -162,17 +155,7 @@ function Sales() {
   };
   const calculateSubtotal = () => {
     return selectedItems.reduce((total: number, item: any) => {
-      const itemPrice = item.variants.reduce(
-        (totalPrice: number, variant: any) => {
-          if (item.selectedSizes.includes(variant.size)) {
-            return totalPrice + variant.price;
-          }
-          return totalPrice;
-        },
-        0
-      );
-
-      return total + (itemPrice || 0) * item.quantity;
+      return total + (item.price || 0) * item.quantity;
     }, 0);
   };
   const handlePlaceOrder = () => {
@@ -316,73 +299,54 @@ function Sales() {
               </span>
             </div>
             <div className="p-4 min-h-screen">
-              <div className="flex flex-col  gap-2 mb-4 h-[450px] max-h-[450px] overflow-auto border p-2">
-                {selectedItems.map((item: any) => (
-                  <div
-                    key={`${item._id}-${item.selectedSizes[0]}`}
-                    className="bg-lightdisable flex justify-between rounded-md px-4 py-2 items-center relative"
-                  >
-                    <div className="absolute top-1 right-1 bg-white rounded-[50%] px-1 cursor-pointer">
-                      <FontAwesomeIcon
-                        icon={faClose}
-                        onClick={() => handleRemoveFromOrder(item._id, item.selectedSizes[0])}
+              <div className="flex flex-col gap-2 mb-4 h-[450px] max-h-[450px] overflow-auto border p-2">
+              {selectedItems.map((item: any) => (
+                <div
+                  key={`${item._id}-${item.selectedSizes[0]}`}
+                  className="bg-lightdisable flex justify-between rounded-md px-4 py-2 items-center relative"
+                >
+                  <div className="absolute top-1 right-1 bg-white rounded-[50%] px-1 cursor-pointer">
+                    <FontAwesomeIcon
+                      icon={faClose}
+                      onClick={() => handleRemoveFromOrder(item._id, item.selectedSizes[0])}
+                    />
+                  </div>
+                  <div className="basis-[27%] rounded-[50%]">
+                    <div className="w-[70px] h-[70px]">
+                      <img
+                        src={item.image || default2}
+                        alt={item.name}
+                        className="rounded-[50%] w-full h-full object-cover"
                       />
                     </div>
-                    <div className="basis-[27%] rounded-[50%]">
-                      <div className="w-[70px] h-[70px]">
-                        <img
-                          src={item.image || default2}
-                          alt={item.name}
-                          className="rounded-[50%] w-full h-full object-cover"
-                        />
-                      </div>
+                  </div>
+                  <div className="flex flex-col basis-[37%]">
+                    <div className="capitalize">
+                      {item.name} {item.selectedSizes.length > 0 && ` (${item.selectedSizes.join(', ')})`}
                     </div>
-                    <div className="flex flex-col basis-[37%]">
-                      <div className="capitalize">
-                        {item.name}{" "}
-                        {item.selectedSizes.length > 0 &&
-                          ` (${item.selectedSizes
-                            .map((size: string) => size.charAt(0))
-                            .join(", ")})`}
-                      </div>
-                      <div>
-                        {/* Rs. {item.price || "00.00"} */}
-                        Rs.{" "}
-                        {item.selectedSizes.length > 0
-                          ? item.selectedSizes.reduce(
-                              (total: number, size: string) => {
-                                const selectedVariant = item.variants.find(
-                                  (variant: any) => variant.size === size
-                                );
-                                return (
-                                  total +
-                                  (selectedVariant ? selectedVariant.price : 0)
-                                );
-                              },
-                              0
-                            )
-                          : "00.00"}
-                      </div>
-                    </div>
-                    <div className="basis-[37%] flex justify-center items-center">
-                      <div className="bg-white rounded-[20px] px-4 py-2 flex gap-2">
-                        <button
-                          className="bg-primary text-center w-6 h-6 text-white rounded-[50%]"
-                          onClick={() => handleDecreaseQuantity(item._id)}
-                        >
-                          -
-                        </button>
-                        <span className="mx-2">{item.quantity}</span>
-                        <button
-                          className="bg-primary text-white w-6 h-6 text-center rounded-[50%]"
-                          onClick={() => handleIncreaseQuantity(item._id)}
-                        >
-                          +
-                        </button>
-                      </div>
+                    <div>
+                      Rs. {item.price || "00.00"}
                     </div>
                   </div>
-                ))}
+                  <div className="basis-[37%] flex justify-center items-center">
+                    <div className="bg-white rounded-[20px] px-4 py-2 flex gap-2">
+                      <button
+                        className="bg-primary text-center w-6 h-6 text-white rounded-[50%]"
+                        onClick={() => handleDecreaseQuantity(item._id)}
+                      >
+                        -
+                      </button>
+                      <span className="mx-2">{item.quantity}</span>
+                      <button
+                        className="bg-primary text-white w-6 h-6 text-center rounded-[50%]"
+                        onClick={() => handleIncreaseQuantity(item._id)}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
               </div>
 
               <div className="flex justify-between mb-2">
