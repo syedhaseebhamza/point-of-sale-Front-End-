@@ -14,16 +14,14 @@ export const getItemByCategoryId = (categoryId: any) => {
   }
 };
 
-export const handelPlaceOrder = async (data: any, categoryId: any , productId:any) => {
-  const params = categoryId && productId ? { categoryId,productId } : {};
-  
+export const handelPlaceOrder = async (data: any) => {
   try {
     const response = await makeApiCall<any>({
       url: `api/place/order`,
       method: "POST",
       data,
-      params,
     });
+    console.log(response);
     return response;
   } catch (error: any) {
     throw new Error(error.response.data.message || "Failed to place order");
