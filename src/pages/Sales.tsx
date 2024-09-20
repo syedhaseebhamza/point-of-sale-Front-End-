@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { getAllCatagory } from "@/app/features/catagory/catagoryApi";
-import { getItemByCategoryId } from "@/app/features/sales/salesApi";
+import {
+  getItemByCategoryId,
+  handelPlaceOrder,
+} from "@/app/features/sales/salesApi";
 import Card from "@/components/common/cards";
 import default2 from "../Images/default_rectangle.jpg";
 import { getAllItem } from "@/app/features/Item/itemApi";
@@ -13,7 +16,7 @@ function Sales() {
   const [items, setItems] = useState<any>([]);
   const [selectedItems, setSelectedItems] = useState<any>([]);
   const [selectedSizes, setSelectedSizes] = useState<any>("");
-  const [selectedItemQuantity, setSelectedItemQuantity] = useState(1);
+  const [activeTab, setActiveTab] = useState("newOrderBill");
 
   useEffect(() => {
     const fetchCatagory = async () => {
@@ -157,20 +160,27 @@ function Sales() {
       return total - (item.price || 0) * item.quantity;
     }, 0);
   };
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async (isDraft: boolean) => {
     const data = {
       categoryData: selectedItems.map((item: any) => ({
         categoryId: item.categoryId,
       })),
       productData: selectedItems.map((item: any) => ({
-        id: item._id,
-        name: item.name,
-        totalPrice: item.price,
-        quantity: item.quantity,
+        productId: item._id,
+        productName: item.name,
+        productQuantity: item.quantity,
         variants: item.selectedSizes[0],
       })),
+      discount: 123213,
+      totalPrice: 324324324,
+      isDraft
     };
-    console.log(data);
+    try {
+      const response = await handelPlaceOrder(data);
+      console.log("in page", response);
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 
   const calculateTotal = () => {
@@ -179,7 +189,11 @@ function Sales() {
     return subtotal - tax;
   };
 
-  const handleQuantityChange = (itemId: string, amount: number, variants: any) => {
+  const handleQuantityChange = (
+    itemId: string,
+    amount: number,
+    variants: any
+  ) => {
     console.log(itemId, variants);
     setSelectedItems((prevItems: any) =>
       prevItems.map((item: any) =>
@@ -234,12 +248,6 @@ function Sales() {
                             `}
                             onClick={() => {
                               handleSizeClick(item._id, variant.size);
-                              console.log(
-                                item._id,
-                                variant.size,
-                                "=======>",
-                                selectedSizes[item._id]?.includes(variant.size)
-                              );
                             }}
                           >
                             {variant.size.charAt(0)}
@@ -276,68 +284,105 @@ function Sales() {
         </div>
         <div className="basis-full order-1 md:order-2 md:basis-[30%] border-l border-gray-100">
           <div className="shadow-lg">
-            <div className="flex  justify-between items-center rounded-xl shadow-md p-4">
-              <span className="font-semibold text-lg">New Order Bill</span>
-              <span className="font-semibold text-lg">Draft</span>
+            <div className="flex  justify-between items-center  rounded-xl shadow-md p-4">
+              <span
+                className={`font-semibold text-lg cursor-pointer ${
+                  activeTab === "newOrderBill"
+                    ? "text-black border-b-2 border-[black]"
+                    : "text-gray-400"
+                }`}
+                onClick={() => setActiveTab("newOrderBill")}
+              >
+                New Order Bill
+              </span>
+              <span
+                className={`font-semibold text-lg cursor-pointer ${
+                  activeTab === "draft"
+                    ? "text-black border-b-2 border-[black]"
+                    : "text-gray-400"
+                }`}
+                onClick={() => setActiveTab("draft")}
+              >
+                Draft
+              </span>
               <span className="text-disabled text-lg">{formattedDate}</span>
             </div>
+
             <div className="p-4 min-h-screen">
-              <div className="flex flex-col gap-2 mb-4 h-[450px] max-h-[450px] overflow-auto border p-2">
-                {selectedItems.map((item: any) => (
-                  <div
-                    key={`${item._id}-${item.selectedSizes[0]}`}
-                    className="bg-lightdisable flex justify-between rounded-md px-4 py-2 items-center relative"
-                  >
-                    <div className="absolute top-1 right-1 bg-white rounded-[50%] px-1 cursor-pointer">
-                      <FontAwesomeIcon
-                        icon={faClose}
-                        onClick={() =>
-                          handleRemoveFromOrder(item._id, item.selectedSizes[0])
-                        }
-                      />
-                    </div>
-                    <div className="basis-[27%] rounded-[50%]">
-                      <div className="w-[70px] h-[70px]">
-                        <img
-                          src={item.image || default2}
-                          alt={item.name}
-                          className="rounded-[50%] w-full h-full object-cover"
+              {activeTab === "newOrderBill" ? (
+                <div className="flex flex-col  gap-2 mb-4 h-[450px] max-h-[450px] overflow-auto border p-2">
+                  {selectedItems.map((item: any) => (
+                    <div
+                      key={`${item._id}-${item.selectedSizes[0]}`}
+                      className="bg-lightdisable flex justify-between rounded-md px-4 py-2 items-center relative"
+                    >
+                      <div className="absolute top-1 right-1 bg-white rounded-[50%] px-1 cursor-pointer">
+                        <FontAwesomeIcon
+                          icon={faClose}
+                          onClick={() =>
+                            handleRemoveFromOrder(
+                              item._id,
+                              item.selectedSizes[0]
+                            )
+                          }
                         />
                       </div>
-                    </div>
-                    <div className="flex flex-col basis-[37%]">
-                      <div className="capitalize">
-                        {item.name}{" "}
-                        {item.selectedSizes.length > 0 &&
-                          ` (${item.selectedSizes.join(", ")})`}
-                        {/* <span> ( {item.variants.size} )</span> */}
+                      <div className="basis-[27%] rounded-[50%]">
+                        <div className="w-[70px] h-[70px]">
+                          <img
+                            src={item.image || default2}
+                            alt={item.name}
+                            className="rounded-[50%] w-full h-full object-cover"
+                          />
+                        </div>
                       </div>
-                      <div>Rs. {item.price || "00.00"}</div>
-                    </div>
-                    <div className="basis-[37%] flex justify-center items-center">
-                      <div className="bg-white rounded-[20px] px-4 py-2 flex gap-2">
-                        <button
-                          onClick={() =>
-                            handleQuantityChange( item._id, -1, item.selectedSizes[0])
-                          }
-                          className="bg-primary text-center w-6 h-6 text-white rounded-[50%]"
-                        >
-                          -
-                        </button>
-                        <span className="mx-2">{item.quantity}</span>
-                        <button
-                          onClick={() =>
-                            handleQuantityChange(item._id, +1, item.selectedSizes[0])
-                          }
-                          className="bg-primary text-white w-6 h-6 text-center rounded-[50%]"
-                        >
-                          +
-                        </button>
+                      <div className="flex flex-col basis-[37%]">
+                        <div className="capitalize">
+                          {item.name}{" "}
+                          {item.selectedSizes.length > 0 &&
+                            ` (${item.selectedSizes.join(", ")})`}
+                          {/* <span> ( {item.variants.size} )</span> */}
+                        </div>
+                        <div>Rs. {item.price || "00.00"}</div>
+                      </div>
+                      <div className="basis-[37%] flex justify-center items-center">
+                        <div className="bg-white rounded-[20px] px-4 py-2 flex gap-2">
+                          <button
+                            onClick={() =>
+                              handleQuantityChange(
+                                item._id,
+                                -1,
+                                item.selectedSizes[0]
+                              )
+                            }
+                            className="bg-primary text-center w-6 h-6 text-white rounded-[50%]"
+                          >
+                            -
+                          </button>
+                          <span className="mx-2">{item.quantity}</span>
+                          <button
+                            onClick={() =>
+                              handleQuantityChange(
+                                item._id,
+                                +1,
+                                item.selectedSizes[0]
+                              )
+                            }
+                            className="bg-primary text-white w-6 h-6 text-center rounded-[50%]"
+                          >
+                            +
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col  gap-2 mb-4 h-[450px] max-h-[450px] overflow-auto border p-2">
+                  {" "}
+                  helo
+                </div>
+              )}
 
               <div className="flex justify-between mb-2">
                 <span className="font-bold">Sub Total</span>
@@ -361,11 +406,12 @@ function Sales() {
                 <Button
                   label={"Place Order"}
                   className={` text-white rounded-md w-1/2`}
-                  onClick={handlePlaceOrder}
+                  onClick={() => handlePlaceOrder(false)}
                 />
                 <Button
                   label={"Draft"}
                   className={` text-white rounded-md w-1/2`}
+                  onClick={() => handlePlaceOrder(true)}
                 />
               </div>
             </div>

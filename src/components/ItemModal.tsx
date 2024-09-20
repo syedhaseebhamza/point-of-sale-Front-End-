@@ -158,7 +158,7 @@ function ItemModal({
   return (
     <div>
       <div className="overflow-auto max-h-[500px] w-[800px] bg-white px-16 py-16 ">
-        <div className="grid grid-cols-2 gap-x-4 gap-y-4 pb-[1rem]">
+        <div className=" grid grid-cols-2 gap-x-4 gap-y-4 pb-[1rem]">
           <div>
             <div className="text-[black] mb-4 text-[14px]">Category</div>
             <button
