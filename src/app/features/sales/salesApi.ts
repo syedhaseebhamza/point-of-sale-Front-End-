@@ -21,9 +21,22 @@ export const handelPlaceOrder = async (data: any) => {
       method: "POST",
       data,
     });
-    console.log(response);
     return response;
   } catch (error: any) {
     throw new Error(error.response.data.message || "Failed to place order");
+  }
+};
+
+export const handelFetchAllDraftItem = async (isDraft: boolean) => {
+  const params = isDraft ? { isDraft } : {};
+  try {
+    const response = await makeApiCall<any>({
+      url: `api/all/order`,
+      method: "GET",
+      params,
+    });
+    return response;
+  } catch (error: any) {
+    throw new Error(error.response.data.message || "Failed to Fetch order");
   }
 };

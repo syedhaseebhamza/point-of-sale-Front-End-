@@ -30,9 +30,11 @@ function Login() {
   const handelSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await dispatch(login(credentials)).unwrap();
-      navigate("/user", { replace: true });
-      window.location.href = "/user";
+      const response = await dispatch(login(credentials)).unwrap();
+      if (response) {
+        navigate("/user", { replace: true });
+      }
+      // window.location.href = "/user";
     } catch (error: any) {
       console.error(error);
     }
@@ -83,7 +85,7 @@ function Login() {
                   placeholder="Enter password"
                 />
                 <FontAwesomeIcon
-                  icon={showPassword ? faEye :  faEyeSlash}
+                  icon={showPassword ? faEye : faEyeSlash}
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 cursor-pointer text-gray-500"
                 />
