@@ -3,6 +3,7 @@ import { getAllCatagory } from "@/app/features/catagory/catagoryApi";
 import {
   getItemByCategoryId,
   handelPlaceOrder,
+  handelFetchAllDraftItem,
 } from "@/app/features/sales/salesApi";
 import Card from "@/components/common/cards";
 import default2 from "../Images/default_rectangle.jpg";
@@ -17,6 +18,7 @@ function Sales() {
   const [selectedItems, setSelectedItems] = useState<any>([]);
   const [selectedSizes, setSelectedSizes] = useState<any>("");
   const [activeTab, setActiveTab] = useState("newOrderBill");
+  const [draftItem, setDraftItem] = useState<any>([]);
 
   useEffect(() => {
     const fetchCatagory = async () => {
@@ -50,14 +52,16 @@ function Sales() {
       console.error("Error fetching items for category:", error);
     }
   };
-  const formattedDate = new Date().toLocaleString("en-US", {
-    weekday: "short",
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+  const formatDate = (dateString: any) => {
+    return new Date(dateString).toLocaleString("en-US", {
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
 
   const handleAddToOrder = (item: any) => {
     const selectedItemSizes = selectedSizes[item._id] || [];
@@ -84,7 +88,7 @@ function Sales() {
 
     setSelectedItems((prevItems: any) => {
       const filteredItems = prevItems.filter(
-        (i: any) => !i._id.startsWith(item._id) // ensure no duplicate items
+        (i: any) => !i._id.startsWith(item._id)
       );
 
       return [...filteredItems, ...newItems];
@@ -95,7 +99,6 @@ function Sales() {
     setSelectedSizes((prevSizes: any) => {
       const updatedSizes = { ...prevSizes };
       if (updatedSizes[itemId]?.includes(size)) {
-        // Remove size if already selected
         updatedSizes[itemId] = updatedSizes[itemId].filter(
           (s: string) => s !== size
         );
@@ -103,7 +106,6 @@ function Sales() {
           delete updatedSizes[itemId];
         }
       } else {
-        // Add size if not already selected
         updatedSizes[itemId] = [...(updatedSizes[itemId] || []), size];
       }
       return updatedSizes;
@@ -114,7 +116,6 @@ function Sales() {
     console.log(itemId, size);
     setSelectedItems((prevItems: any) => {
       if (size) {
-        // Remove only the specific size of the item
         return prevItems
           .map((item: any) => {
             if (item._id === itemId) {
@@ -135,7 +136,6 @@ function Sales() {
     setSelectedSizes((prevSizes: any) => {
       const updatedSizes = { ...prevSizes };
       if (size) {
-        // Remove the specific size from the selectedSizes
         updatedSizes[itemId] = updatedSizes[itemId]?.filter(
           (s: string) => s !== size
         );
@@ -143,7 +143,6 @@ function Sales() {
           delete updatedSizes[itemId];
         }
       } else {
-        // Remove all sizes for the item
         delete updatedSizes[itemId];
       }
       return updatedSizes;
@@ -173,7 +172,7 @@ function Sales() {
       })),
       discount: 123213,
       totalPrice: 324324324,
-      isDraft
+      isDraft,
     };
     try {
       const response = await handelPlaceOrder(data);
@@ -202,6 +201,17 @@ function Sales() {
           : item
       )
     );
+  };
+
+  const handleDraftTab = async () => {
+    setActiveTab("draft");
+    try {
+      const response = await handelFetchAllDraftItem(true);
+      console.log("response", response.orders);
+      setDraftItem(response.orders);
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 
   return (
@@ -301,11 +311,13 @@ function Sales() {
                     ? "text-black border-b-2 border-[black]"
                     : "text-gray-400"
                 }`}
-                onClick={() => setActiveTab("draft")}
+                onClick={handleDraftTab}
               >
                 Draft
               </span>
-              <span className="text-disabled text-lg">{formattedDate}</span>
+              <span className="text-disabled text-lg">
+                {formatDate(Date.now())}
+              </span>
             </div>
 
             <div className="p-4 min-h-screen">
@@ -341,7 +353,6 @@ function Sales() {
                           {item.name}{" "}
                           {item.selectedSizes.length > 0 &&
                             ` (${item.selectedSizes.join(", ")})`}
-                          {/* <span> ( {item.variants.size} )</span> */}
                         </div>
                         <div>Rs. {item.price || "00.00"}</div>
                       </div>
@@ -379,8 +390,27 @@ function Sales() {
                 </div>
               ) : (
                 <div className="flex flex-col  gap-2 mb-4 h-[450px] max-h-[450px] overflow-auto border p-2">
-                  {" "}
-                  helo
+                  {draftItem.map((item: any, index: number) => (
+                    <div
+                      key={index}
+                      className="bg-lightdisable flex justify-between rounded-md px-4 py-2 items-center"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <span className="text-sm font-semibold text-gray-600">
+                          Draft {index + 1}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          Date: {formatDate(item.Date)}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {draftItem.length} items
+                        </span>
+                        <span className="text-sm font-semibold text-gray-800">
+                          Total: Rs.344
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
 

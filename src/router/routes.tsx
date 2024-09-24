@@ -12,28 +12,88 @@ import Sales from "@/pages/Sales";
 import UserPage from "@/pages/UserPage";
 import { Navigate, createBrowserRouter as Router } from "react-router-dom";
 
-export const nonAuthRoutes = Router([
+// export const nonAuthRoutes = Router([
+//   {
+//     path: "*",
+//     element: <Navigate to="/" replace />,
+//   },
+//   {
+//     path: "/",
+//     element: <Layout />,
+//     children: [
+//       // {
+//       //   path: "/",
+//       //   element: <Home />,
+//       // },
+//       {
+//         path: "/about",
+//         element: (
+//           <div>about page go back to couter page to see data presists</div>
+//         ),
+//       },
+//       {
+//         path: "/counter",
+//         element: <Counter />,
+//       },
+//       {
+//         path: "/user",
+//         element: <UserPage />,
+//       },
+//       {
+//         path: "/rolepermission",
+//         element: <RolePermission />,
+//       },
+//       {
+//         path: "/category",
+//         element: <Catagary />,
+//       },
+//       {
+//         path: "/item",
+//         element: <Items />,
+//       },
+//       {
+//         path: "/deals",
+//         element: <Deals />,
+//       },
+//       {
+//         path: "/sales",
+//         element: <Sales />,
+//       },
+//       {
+//         path: "/order",
+//         element: <Order />,
+//       },
+//       {
+//         path: "/menu",
+//         element: <Menu />,
+//       },
+//     ],
+//   },
+// ]);
+
+// export const authRoutes = Router([
+//   {
+//     path: "/login",
+//     element: <Login />,
+//   },
+// ]);
+
+export const routes = Router([
   {
     path: "*",
-    element: <Navigate to="/" replace />,
+    element: <div>Page not found</div>,
+  },
+  {
+    path: "/login",
+    element: <Login />,
   },
   {
     path: "/",
     element: <Layout />,
     children: [
-      // {
-      //   path: "/",
-      //   element: <Home />,
-      // },
       {
-        path: "/about",
-        element: (
-          <div>about page go back to couter page to see data presists</div>
-        ),
-      },
-      {
-        path: "/counter",
-        element: <Counter />,
+        path: "/",
+        element: <Navigate to="/login" replace />, // Redirect to /login by default
       },
       {
         path: "/user",
@@ -68,12 +128,5 @@ export const nonAuthRoutes = Router([
         element: <Menu />,
       },
     ],
-  },
-]);
-
-export const authRoutes = Router([
-  {
-    path: "/login",
-    element: <Login />,
   },
 ]);
