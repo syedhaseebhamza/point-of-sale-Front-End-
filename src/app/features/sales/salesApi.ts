@@ -27,6 +27,18 @@ export const handelPlaceOrder = async (data: any) => {
   }
 };
 
+export const fetchPlaceOrder = async () => {
+  try {
+    const response = await makeApiCall<any>({
+      url: `api/all/order`,
+      method: "GET",
+    });
+    return response;
+  } catch (error: any) {
+    throw new Error(error.response.data.message || "Failed to fetch order");
+  }
+};
+
 export const handelFetchAllDraftItem = async (isDraft: boolean) => {
   const params = isDraft ? { isDraft } : {};
   try {
@@ -38,5 +50,30 @@ export const handelFetchAllDraftItem = async (isDraft: boolean) => {
     return response;
   } catch (error: any) {
     throw new Error(error.response.data.message || "Failed to Fetch order");
+  }
+};
+
+export const handelDeleteOrder = async (id: any) => {
+  try {
+    const responce = await makeApiCall<any>({
+      url: `api/delete/order/${id}`,
+      method: "DELETE",
+    });
+    return responce;
+  } catch (error: any) {
+    throw new Error(error.response.data.message || "Failed to delete order");
+  }
+};
+
+export const handelUpdateOrder = async (data: any, id: any) => {
+  try {
+    const responce = await makeApiCall<any>({
+      url: `api/update/order/${id}`,
+      method: "PUT",
+      data,
+    });
+    return responce;
+  } catch (error) {
+    throw new Error("Failed to Update order");
   }
 };

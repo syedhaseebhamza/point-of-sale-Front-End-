@@ -2,25 +2,19 @@ import React, { useEffect, useState } from "react";
 import { getAllCatagory } from "@/app/features/catagory/catagoryApi";
 import {
   getItemByCategoryId,
-  handelPlaceOrder,
-  handelFetchAllDraftItem,
 } from "@/app/features/sales/salesApi";
 import Card from "@/components/common/cards";
 import default2 from "../Images/default_rectangle.jpg";
 import { getAllItem } from "@/app/features/Item/itemApi";
 import Button from "@/components/common/button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClose } from "@fortawesome/free-solid-svg-icons";
+import Cart from "@/components/Cart";
 
 function Sales() {
   const [catagory, setCatagory] = useState<any>([]);
-  const [items, setItems] = useState<any>([]);
+  const [items, setItems] = useState<any[]>([]);
   const [selectedItems, setSelectedItems] = useState<any>([]);
   const [selectedSizes, setSelectedSizes] = useState<any>("");
-  const [activeTab, setActiveTab] = useState("newOrderBill");
-  const [draftItem, setDraftItem] = useState<any>([]);
   const [selectedDraftItem, setSelectedDraftItem] = useState<any>({});
-  const [isDraftItemSelected, setIsDraftItemSelected] = useState(false);
 
   useEffect(() => {
     const fetchCatagory = async () => {
@@ -43,9 +37,9 @@ function Sales() {
         console.error("Failed to fetch categories", error);
       }
     };
-
     fetchItems();
   }, []);
+
   const handleItemClick = async (categoryId: string) => {
     try {
       const response = await getItemByCategoryId(categoryId);
@@ -53,16 +47,6 @@ function Sales() {
     } catch (error) {
       console.error("Error fetching items for category:", error);
     }
-  };
-  const formatDate = (dateString: any) => {
-    return new Date(dateString).toLocaleString("en-US", {
-      weekday: "short",
-      day: "2-digit",
-      month: "short",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
   };
 
   const handleAddToOrder = (item: any) => {
@@ -114,112 +98,6 @@ function Sales() {
     });
   };
 
-  const handleRemoveFromOrder = (itemId: string, size?: string) => {
-    setSelectedItems((prevItems: any) => {
-      if (size) {
-        return prevItems
-          .map((item: any) => {
-            if (item._id === itemId) {
-              return {
-                ...item,
-                selectedSizes: item.selectedSizes.filter(
-                  (s: string) => s !== size
-                ),
-              };
-            }
-            return item;
-          })
-          .filter((item: any) => item.selectedSizes.length > 0);
-      } else {
-      }
-    });
-
-    setSelectedSizes((prevSizes: any) => {
-      const updatedSizes = { ...prevSizes };
-      if (size) {
-        updatedSizes[itemId] = updatedSizes[itemId]?.filter(
-          (s: string) => s !== size
-        );
-        if (updatedSizes[itemId]?.length === 0) {
-          delete updatedSizes[itemId];
-        }
-      } else {
-        delete updatedSizes[itemId];
-      }
-      return updatedSizes;
-    });
-  };
-
-  const calculateSubtotal = (items: any[], isDraft = false) => {
-    return items.reduce((total: number, item: any) => {
-      const price = isDraft ? item.productPrice : item.price;
-      const quantity = isDraft ? item.productQuantity : item.quantity;
-      return total + (price || 0) * quantity;
-    }, 0);
-  };
-
-  const calculateDiscount = (items: any[], isDraft = false) => {
-    return items.reduce((total: number, item: any) => {
-      const price = isDraft ? item.productPrice : item.price;
-      const quantity = isDraft ? item.productQuantity : item.quantity;
-      return total - (price || 0) * quantity;
-    }, 0);
-  };
-  const handlePlaceOrder = async (isDraft: boolean) => {
-    const data = {
-      categoryData: selectedItems.map((item: any) => ({
-        categoryId: item.categoryId,
-      })),
-      productData: selectedItems.map((item: any) => ({
-        productId: item._id,
-        productName: item.name,
-        productPrice: item.price,
-        productQuantity: item.quantity,
-        variants: item.selectedSizes[0],
-      })),
-      discount: 1200,
-      totalPrice: 12007,
-      isDraft,
-    };
-    try {
-      await handelPlaceOrder(data);
-      setSelectedItems([]);
-      setSelectedSizes({});
-    } catch (error) {
-      console.log("error", error);
-    }
-  };
-
-  const calculateTotal = (items: any[], isDraft = false) => {
-    const subtotal = calculateSubtotal(items, isDraft);
-    const tax = subtotal * 0.1;
-    return subtotal - tax;
-  };
-
-  const handleQuantityChange = (
-    itemId: string,
-    amount: number,
-    variants: any
-  ) => {
-    setSelectedItems((prevItems: any) =>
-      prevItems.map((item: any) =>
-        item._id === itemId && variants === item.selectedSizes[0]
-          ? { ...item, quantity: Math.max(item.quantity + amount, 1) }
-          : item
-      )
-    );
-  };
-
-  const handleDraftTab = async () => {
-    setActiveTab("draft");
-    try {
-      const response = await handelFetchAllDraftItem(true);
-
-      setDraftItem(response.orders);
-    } catch (error) {
-      console.log("error", error);
-    }
-  };
 
   return (
     <>
@@ -227,7 +105,7 @@ function Sales() {
         <div className="flex flex-col md:gap-[3rem] order-2 md:order-1 basis-full md:basis-[70%]">
           <div className="grid grid-cols-7 gap-x-4 gap-y-4 w-full">
             {catagory.map((cat: any) => (
-              <div onClick={() => handleItemClick(cat._id)}>
+              <div key={cat._id} onClick={() => handleItemClick(cat._id)}>
                 <Card
                   key={cat._id}
                   image={cat.image || "/default-image.jpg"}
@@ -299,303 +177,17 @@ function Sales() {
             ))}
           </div>
         </div>
-        <div className="basis-full order-1 md:order-2 md:basis-[30%] border-l border-gray-100">
-          <div className="shadow-lg">
-            <div className="flex  justify-between items-center  rounded-xl shadow-md p-4">
-              <span
-                className={`font-semibold text-lg cursor-pointer ${
-                  activeTab === "newOrderBill"
-                    ? "text-black border-b-2 border-[black]"
-                    : "text-gray-400"
-                }`}
-                onClick={() => setActiveTab("newOrderBill")}
-              >
-                New Order Bill
-              </span>
-              <span
-                className={`font-semibold text-lg cursor-pointer ${
-                  activeTab === "draft"
-                    ? "text-black border-b-2 border-[black]"
-                    : "text-gray-400"
-                }`}
-                onClick={handleDraftTab}
-              >
-                Draft
-              </span>
-              <span className="text-disabled text-lg">
-                {formatDate(Date.now())}
-              </span>
-            </div>
-
-            <div className="p-4 min-h-screen">
-              {activeTab === "newOrderBill" ? (
-                <div className="flex flex-col  gap-2 mb-4 h-[450px] max-h-[450px] overflow-auto border p-2">
-                  <div className="flex flex-col gap-4">
-                    {selectedDraftItem?.productData?.map((item: any) => (
-                      <div
-                        key={item._id}
-                        className="bg-lightdisable flex justify-between rounded-md px-4 py-2 items-center relative"
-                      >
-                        <div className="absolute top-1 right-1 bg-white rounded-[50%] px-1 cursor-pointer">
-                          <FontAwesomeIcon
-                            icon={faClose}
-                            onClick={() => {
-                              setSelectedDraftItem((prevState: any) => ({
-                                ...prevState,
-                                productData: prevState.productData.filter(
-                                  (product: any) => product._id !== item._id
-                                ),
-                              }));
-                            }}
-                          />
-                        </div>
-                        <div className="basis-[27%] rounded-[50%]">
-                          <div className="w-[70px] h-[70px]">
-                            <img
-                              src={default2}
-                              alt={default2}
-                              className="rounded-[50%] w-full h-full object-cover"
-                            />
-                          </div>
-                        </div>
-                        <div className="flex flex-col basis-[37%]">
-                          <div className="capitalize">
-                            {item.productName} ( {item.variants} )
-                          </div>
-                          <div>Rs. {item.productPrice || "00.00"}</div>
-                        </div>
-                        <div className="basis-[37%] flex justify-center items-center">
-                          <div className="bg-white rounded-[20px] px-4 py-2 flex gap-2">
-                            <button
-                              onClick={() => {
-                                setSelectedDraftItem((prevState: any) => ({
-                                  ...prevState,
-                                  productData: prevState.productData.map(
-                                    (product: any) =>
-                                      product._id === item._id
-                                        ? {
-                                            ...product,
-                                            productQuantity: Math.max(
-                                              product.productQuantity - 1,
-                                              1
-                                            ),
-                                          }
-                                        : product
-                                  ),
-                                }));
-                              }}
-                              className="bg-primary text-center w-6 h-6 text-white rounded-[50%]"
-                            >
-                              -
-                            </button>
-                            <span className="mx-2">{item.productQuantity}</span>
-                            <button
-                              onClick={() => {
-                                setSelectedDraftItem((prevState: any) => ({
-                                  ...prevState,
-                                  productData: prevState.productData.map(
-                                    (product: any) =>
-                                      product._id === item._id
-                                        ? {
-                                            ...product,
-                                            productQuantity:
-                                              product.productQuantity + 1,
-                                          }
-                                        : product
-                                  ),
-                                }));
-                              }}
-                              className="bg-primary text-white w-6 h-6 text-center rounded-[50%]"
-                            >
-                              +
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="flex flex-col gap-4">
-                    {selectedItems?.map((item: any) => (
-                      <div
-                        key={`${item._id}-${item.selectedSizes[0]}`}
-                        className="bg-lightdisable flex justify-between rounded-md px-4 py-2 items-center relative"
-                      >
-                        <div className="absolute top-1 right-1 bg-white rounded-[50%] px-1 cursor-pointer">
-                          <FontAwesomeIcon
-                            icon={faClose}
-                            onClick={() =>
-                              handleRemoveFromOrder(
-                                item._id,
-                                item.selectedSizes[0]
-                              )
-                            }
-                          />
-                        </div>
-                        <div className="basis-[27%] rounded-[50%]">
-                          <div className="w-[70px] h-[70px]">
-                            <img
-                              src={item.image || default2}
-                              alt={item.name}
-                              className="rounded-[50%] w-full h-full object-cover"
-                            />
-                          </div>
-                        </div>
-                        <div className="flex flex-col basis-[37%]">
-                          <div className="capitalize">
-                            {item.name}{" "}
-                            {item.selectedSizes.length > 0 &&
-                              ` (${item.selectedSizes.join(", ")})`}
-                          </div>
-                          <div>Rs. {item.price || "00.00"}</div>
-                        </div>
-                        <div className="basis-[37%] flex justify-center items-center">
-                          <div className="bg-white rounded-[20px] px-4 py-2 flex gap-2">
-                            <button
-                              onClick={() =>
-                                handleQuantityChange(
-                                  item._id,
-                                  -1,
-                                  item.selectedSizes[0]
-                                )
-                              }
-                              className="bg-primary text-center w-6 h-6 text-white rounded-[50%]"
-                            >
-                              -
-                            </button>
-                            <span className="mx-2">{item.quantity}</span>
-                            <button
-                              onClick={() =>
-                                handleQuantityChange(
-                                  item._id,
-                                  +1,
-                                  item.selectedSizes[0]
-                                )
-                              }
-                              className="bg-primary text-white w-6 h-6 text-center rounded-[50%]"
-                            >
-                              +
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="flex flex-col   gap-2 mb-4 h-[450px] max-h-[450px] overflow-auto border p-2">
-                  {draftItem.map((item: any, index: number) => (
-                    <div
-                      key={index}
-                      className="bg-lightdisable flex justify-between rounded-md px-4 py-2 items-center hover:scale-[0.9] cursor-pointer"
-                      onClick={() => {
-                        setActiveTab("newOrderBill");
-                        setSelectedDraftItem(item);
-                        setIsDraftItemSelected(true);
-                      }}
-                    >
-                      <div className="flex flex-col gap-1">
-                        <span className="text-sm font-semibold text-gray-600">
-                          Draft {index + 1}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          Date: {formatDate(item.Date)}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          {item.productData.length} items
-                        </span>
-                        <span className="text-sm font-semibold text-gray-800">
-                          Total: Rs.344
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <div className="flex justify-between">
-                <div>
-                  <div className="flex gap-4 mb-2 ]">
-                    <span className="font-bold"> Sub Total</span>
-                    <span className="text-success">
-                      Rs.{calculateSubtotal(selectedItems).toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex gap-4 mb-2">
-                    <span className="font-bold">Discount 10%</span>
-                    <span className="text-success">
-                      Rs.{(calculateDiscount(selectedItems) * 0.1).toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex gap-4 mb-2">
-                    <span className="font-bold">Total</span>
-
-                    <span className="text-success">
-                      Rs.{calculateTotal(selectedItems).toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  {isDraftItemSelected && (
-                    <>
-                      <div className="flex gap-4 mb-2">
-                        <span className="font-bold"> Draft Sub Total</span>
-                        <span className="text-success">
-                          Rs.
-                          {calculateSubtotal(
-                            selectedDraftItem?.productData,
-                            true
-                          ).toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex gap-4 mb-2">
-                        <span className="font-bold">Draft Discount 10%</span>
-                        <span className="text-success">
-                          Rs.
-                          {(
-                            calculateDiscount(
-                              selectedDraftItem?.productData,
-                              true
-                            ) * 0.1
-                          ).toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex gap-4 mb-2">
-                        <span className="font-bold">Draft Total</span>
-
-                        <span className="text-success">
-                          Rs.
-                          {calculateTotal(
-                            selectedDraftItem?.productData,
-                            true
-                          ).toFixed(2)}
-                        </span>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-              <div className="flex w-full gap-2">
-                <Button
-                  label={"Place Order"}
-                  className={` text-white rounded-md w-1/2`}
-                  onClick={() => handlePlaceOrder(false)}
-                />
-                <Button
-                  label={"Draft"}
-                  className={` text-white rounded-md w-1/2`}
-                  onClick={() => handlePlaceOrder(true)}
-                />
-              </div>
-              <Button
-                label={"console"}
-                className={` text-white rounded-md w-1/2`}
-                onClick={() => {
-                  console.log("selectedItems");
-                }}
-              />
-            </div>
-          </div>
-        </div>
+        <Cart
+        selectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
+        setItems={setItems}
+        setSelectedSizes={setSelectedSizes}
+        setSelectedDraftItem={setSelectedDraftItem}
+        selectedDraftItem={selectedDraftItem}
+        items={items}
+        
+       
+      />
       </div>
     </>
   );

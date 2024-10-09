@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { login } from "../app/features/Auth/authSlice";
+import { login } from "../app/features/Auth/AuthSlice";
 import { useAppDispatch } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
