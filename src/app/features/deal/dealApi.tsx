@@ -48,7 +48,6 @@ export const handelUpdateDeals = async (data: any, id: any) => {
     });
     return responce;
   } catch (error) {
-    console.log(error)
     throw new Error("Failed to Update Deals");
   }
 };

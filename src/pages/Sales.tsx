@@ -1,28 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { getAllCatagory } from "@/app/features/catagory/catagoryApi";
-import {
-  getItemByCategoryId,
-} from "@/app/features/sales/salesApi";
+import { getItemByCategoryId } from "@/app/features/sales/salesApi";
 import Card from "@/components/common/cards";
 import default2 from "../Images/default_rectangle.jpg";
 import { getAllItem } from "@/app/features/Item/itemApi";
+import { getAllDeals } from "@/app/features/deal/dealApi";
 import Button from "@/components/common/button";
 import Cart from "@/components/Cart";
+import Loader from "@/components/common/Loader/Loader";
 
 function Sales() {
   const [catagory, setCatagory] = useState<any>([]);
   const [items, setItems] = useState<any[]>([]);
+  const [deals, setDeals] = useState<any[]>([]);
   const [selectedItems, setSelectedItems] = useState<any>([]);
   const [selectedSizes, setSelectedSizes] = useState<any>("");
   const [selectedDraftItem, setSelectedDraftItem] = useState<any>({});
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchCatagory = async () => {
       try {
         const response = await getAllCatagory();
+        setIsLoading(true);
         setCatagory(response);
+        setIsLoading(false);
       } catch (error) {
         console.error("Failed to fetch categories", error);
+        setIsLoading(false);
       }
     };
 
@@ -32,12 +37,30 @@ function Sales() {
     const fetchItems = async () => {
       try {
         const response = await getAllItem();
+        setIsLoading(true);
         setItems(response);
+        setIsLoading(false);
       } catch (error) {
-        console.error("Failed to fetch categories", error);
+        console.error("Failed to fetch Items", error);
+        setIsLoading(false);
       }
     };
     fetchItems();
+  }, []);
+
+  useEffect(() => {
+    const fetchDeals = async () => {
+      try {
+        setIsLoading(true);
+        const response = await getAllDeals();
+        setDeals(response.deals);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+        setIsLoading(false);
+      }
+    };
+    fetchDeals();
   }, []);
 
   const handleItemClick = async (categoryId: string) => {
@@ -49,9 +72,10 @@ function Sales() {
     }
   };
 
+
+
   const handleAddToOrder = (item: any) => {
     const selectedItemSizes = selectedSizes[item._id] || [];
-
     if (selectedItemSizes.length === 0) {
       alert("Please select a size.");
       return;
@@ -98,6 +122,21 @@ function Sales() {
     });
   };
 
+  const handleAddDealToOrder = (deal: any) => {
+    const newDeal = {
+      _id: `${deal._id}`,
+      name: deal.name,
+      image: deal.image,
+      price: deal.price,
+      quantity: 1,
+      categoryId: deal.categoryId,
+    };
+
+    setSelectedItems((prevItems: any) => {
+      const filteredItems = prevItems.filter((i: any) => i._id !== deal._id);
+      return [...filteredItems, newDeal];
+    });
+  };
 
   return (
     <>
@@ -175,20 +214,57 @@ function Sales() {
                 </div>
               </div>
             ))}
+
+            {deals.map((data: any) => (
+              <div key={data._id} className="md:basis-[48%] lg:basis-[23%]">
+                <div className="border rounded-xl shadow-lg p-4 lg:px-6 flex flex-col justify-center items-center gap-1">
+                  <img
+                    className="rounded-full object-cover bg-gray-100 h-[80px] w-[80px]"
+                    src={data?.image || default2}
+                    alt={data.name}
+                  />
+                  <div className="basis-full">
+                    <span className="font-bold text-lg capitalize">
+                      {data.name}
+                    </span>
+                  </div>
+                  <div className="flex gap-4 items-center basis-full">
+                    <Button
+                      label={
+                        selectedItems.some(
+                          (selectedItem: any) => selectedItem._id === data._id
+                        )
+                          ? "Added"
+                          : "Add"
+                      }
+                      className={`px-4 !py-1 ${
+                        selectedItems.some(
+                          (selectedItem: any) => selectedItem._id === data._id
+                        )
+                          ? "!bg-success"
+                          : "!bg-disabled"
+                      } text-white rounded-md`}
+                      onClick={() => {
+                        handleAddDealToOrder(data);
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
         <Cart
-        selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems}
-        setItems={setItems}
-        setSelectedSizes={setSelectedSizes}
-        setSelectedDraftItem={setSelectedDraftItem}
-        selectedDraftItem={selectedDraftItem}
-        items={items}
-        
-       
-      />
+          selectedItems={selectedItems}
+          setSelectedItems={setSelectedItems}
+          setItems={setItems}
+          setSelectedSizes={setSelectedSizes}
+          setSelectedDraftItem={setSelectedDraftItem}
+          selectedDraftItem={selectedDraftItem}
+          items={items}
+        />
       </div>
+      {isLoading && <Loader />}
     </>
   );
 }

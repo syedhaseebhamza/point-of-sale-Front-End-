@@ -1,7 +1,7 @@
 import UserPermission from "@/components/UserPermission";
 import Button from "@/components/common/button";
 import Modal from "@/components/common/modal/modal";
-import React, { useState } from "react";
+import { useState } from "react";
 
 function RolePermission() {
   const [showPermissionModal, setShowPermissionModal] = useState(false);
