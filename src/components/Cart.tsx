@@ -170,7 +170,6 @@ const Cart = ({
     [
       {
         ...selectedDraftItem,
-        // totalPrice,
         productData: selectedDraftItem.productData.push(...transformedData),
       },
     ];
