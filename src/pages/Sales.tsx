@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { getAllCatagory } from "@/app/features/catagory/catagoryApi";
-import { getItemByCategoryId } from "@/app/features/sales/salesApi";
+import {
+  getItemByCategoryId,
+  getDealByCategoryId,
+} from "@/app/features/sales/salesApi";
 import Card from "@/components/common/cards";
 import default2 from "../Images/default_rectangle.jpg";
 import { getAllItem } from "@/app/features/Item/itemApi";
@@ -18,61 +21,65 @@ function Sales() {
   const [selectedDraftItem, setSelectedDraftItem] = useState<any>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchCatagory = async () => {
-      try {
-        const response = await getAllCatagory();
-        setIsLoading(true);
-        setCatagory(response);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
-        setIsLoading(false);
-      }
-    };
+  const fetchCatagory = async () => {
+    try {
+      const response = await getAllCatagory();
+      setIsLoading(true);
+      setCatagory(response);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+      setIsLoading(false);
+    }
+  };
 
+  const fetchItems = async () => {
+    try {
+      const response = await getAllItem();
+      setIsLoading(true);
+      setItems(response);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch Items", error);
+      setIsLoading(false);
+    }
+  };
+
+  const fetchDeals = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getAllDeals();
+      setDeals(response.deals);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchCatagory();
-  }, []);
-  useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const response = await getAllItem();
-        setIsLoading(true);
-        setItems(response);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch Items", error);
-        setIsLoading(false);
-      }
-    };
     fetchItems();
-  }, []);
-
-  useEffect(() => {
-    const fetchDeals = async () => {
-      try {
-        setIsLoading(true);
-        const response = await getAllDeals();
-        setDeals(response.deals);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
-        setIsLoading(false);
-      }
-    };
     fetchDeals();
   }, []);
-
-  const handleItemClick = async (categoryId: string) => {
+  
+  const handleItemClick = async (name: string, categoryId: string) => {
     try {
-      const response = await getItemByCategoryId(categoryId);
-      setItems(response.items);
+      const dealNames = ["Deals", "Deal", "deal", "deals"];
+      if (dealNames.includes(name)) {
+        const responseDeal = await getDealByCategoryId(categoryId);
+        setDeals(responseDeal.deals);
+        setItems([]);
+      } else {
+        const response = await getItemByCategoryId(categoryId);
+        setItems(response.items);
+        setDeals([]);
+      }
     } catch (error) {
       console.error("Error fetching items for category:", error);
     }
   };
-
-
+  
 
   const handleAddToOrder = (item: any) => {
     const selectedItemSizes = selectedSizes[item._id] || [];
@@ -125,17 +132,16 @@ function Sales() {
   const handleAddDealToOrder = (deal: any) => {
     const newDeal = {
       _id: `${deal._id}`,
+      categoryName: deal.categoryName,
       name: deal.name,
       image: deal.image,
-      price: deal.price,
+      price: deal.totalPrice,
       quantity: 1,
+      selectedSizes: [""],
       categoryId: deal.categoryId,
     };
 
-    setSelectedItems((prevItems: any) => {
-      const filteredItems = prevItems.filter((i: any) => i._id !== deal._id);
-      return [...filteredItems, newDeal];
-    });
+    setSelectedItems((prevItems: any[]) => [...prevItems, newDeal]);
   };
 
   return (
@@ -144,7 +150,10 @@ function Sales() {
         <div className="flex flex-col md:gap-[3rem] order-2 md:order-1 basis-full md:basis-[70%]">
           <div className="grid grid-cols-7 gap-x-4 gap-y-4 w-full">
             {catagory.map((cat: any) => (
-              <div key={cat._id} onClick={() => handleItemClick(cat._id)}>
+              <div
+                key={cat._id}
+                onClick={() => handleItemClick(cat.name, cat._id)}
+              >
                 <Card
                   key={cat._id}
                   image={cat.image || "/default-image.jpg"}

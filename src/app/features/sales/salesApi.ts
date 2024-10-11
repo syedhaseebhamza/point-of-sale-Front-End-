@@ -14,6 +14,20 @@ export const getItemByCategoryId = (categoryId: any) => {
   }
 };
 
+export const getDealByCategoryId = (categoryId: any) => {
+  const params = categoryId ? { categoryId } : {};
+  try {
+    const response = makeApiCall<any>({
+      url: "api/all/deals",
+      method: "GET",
+      params,
+    });
+    return response;
+  } catch (error) {
+    throw new Error("Failed to fetch Item");
+  }
+};
+
 export const handelPlaceOrder = async (data: any) => {
   try {
     const response = await makeApiCall<any>({

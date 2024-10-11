@@ -10,6 +10,7 @@ import default2 from "../Images/default_rectangle.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import ToastMessage from "./common/toast";
+import { isDraft } from "@reduxjs/toolkit";
 
 const Cart = ({
   selectedItems,
@@ -27,13 +28,27 @@ const Cart = ({
     type: "success" | "error";
     message: string;
   } | null>(null);
+  const transformedData = selectedItems.map((item: any) => ({
+    isDeleted: false,
+    productId: item._id,
+    productName: item.name,
+    productPrice: item.price,
+    productQuantity: item.quantity,
+    variants: item.selectedSizes[0] || item.selectedSizes[""],
+  }));
+
+  const clearall = () => {
+    setSelectedDraftItem((prevState: any) => ({
+      ...prevState,
+      productData: [],
+    }));
+  };
 
   const handleDraftTab = async () => {
-    setActiveTab("draft");
     try {
       const response = await handelFetchAllDraftItem(true);
-
       setDraftItem(response.orders);
+      setActiveTab("draft");
     } catch (error) {
       console.error("Failed to Fetched Draft Order", error);
     }
@@ -50,39 +65,9 @@ const Cart = ({
     });
   };
 
-  const handleRemoveFromOrder = (itemId: string, size?: string) => {
+  const handleRemoveFromOrder = (itemId: string) => {
     setSelectedItems((prevItems: any) => {
-      if (size) {
-        return prevItems
-          .map((item: any) => {
-            if (item._id === itemId) {
-              return {
-                ...item,
-                selectedSizes: item.selectedSizes.filter(
-                  (s: string) => s !== size
-                ),
-              };
-            }
-            return item;
-          })
-          .filter((item: any) => item.selectedSizes.length > 0);
-      } else {
-      }
-    });
-
-    setSelectedSizes((prevSizes: any) => {
-      const updatedSizes = { ...prevSizes };
-      if (size) {
-        updatedSizes[itemId] = updatedSizes[itemId]?.filter(
-          (s: string) => s !== size
-        );
-        if (updatedSizes[itemId]?.length === 0) {
-          delete updatedSizes[itemId];
-        }
-      } else {
-        delete updatedSizes[itemId];
-      }
-      return updatedSizes;
+      return prevItems.filter((item: any) => item._id !== itemId);
     });
   };
 
@@ -92,10 +77,6 @@ const Cart = ({
         const filterItem = items.filter((item: any) => item._id !== id);
         setItems(filterItem);
         handleDraftTab();
-        setToast({
-          type: "success",
-          message: "Draft Item deleted successfully!",
-        });
       })
       .catch((error) => {
         setToast({
@@ -120,6 +101,7 @@ const Cart = ({
       return total - (price || 0) * quantity;
     }, 0);
   };
+
   const handlePlaceOrder = async (isDraft: boolean) => {
     const totalPrice = selectedItems.reduce((total: number, item: any) => {
       return total + item.price * item.quantity;
@@ -142,14 +124,27 @@ const Cart = ({
       totalPrice: totalPrice - discount,
       isDraft,
     };
+
+    if (isDraftItemSelected && !isDraft) {
+      setSelectedDraftItem((prevState: any) => ({
+        productData: [...prevState.productData, ...transformedData],
+        isDraft: isDraft,
+      }));
+    }
+    console.log("selectedDraftItem", selectedDraftItem);
+    console.log("data", data);
+
     try {
-      await handelPlaceOrder(data);
+      await handelPlaceOrder(isDraftItemSelected ? selectedDraftItem : data);
       setSelectedItems([]);
       setSelectedSizes({});
+      clearall();
     } catch (error) {
       console.error("Failed to Placed Order", error);
     }
   };
+
+  
 
   const calculateTotal = (items: any[], isDraft = false) => {
     const subtotal = calculateSubtotal(items, isDraft);
@@ -171,27 +166,10 @@ const Cart = ({
     );
   };
 
-  const clearall = () => {
-    setSelectedDraftItem((prevState: any) => ({
-      ...prevState,
-      productData: [],
-    }));
-  };
-
-  const transformedData = selectedItems.map((item: any) => ({
-    isDeleted: false,
-    productId: item._id,
-    productName: item.name,
-    productPrice: item.price,
-    productQuantity: item.quantity,
-    variants: item.selectedSizes[0],
-  }));
-
   const UpdateOrder = async () => {
     [
       {
         ...selectedDraftItem,
-        // totalPrice,
         productData: selectedDraftItem.productData.push(...transformedData),
       },
     ];
@@ -246,7 +224,6 @@ const Cart = ({
                 <div className="flex flex-col gap-4 ">
                   {Array.isArray(selectedDraftItem?.productData) &&
                     selectedDraftItem.productData.map((item: any) => (
-                      // {selectedDraftItem && selectedDraftItem.productData && selectedDraftItem?.productData?.map((item: any) => (
                       <div
                         key={item._id}
                         className="bg-lightdisable flex justify-between rounded-md px-4 py-2 items-center relative"
@@ -275,7 +252,8 @@ const Cart = ({
                         </div>
                         <div className="flex flex-col basis-[37%]">
                           <div className="capitalize">
-                            {item.productName} ( {item.variants} )
+                            {item.productName} ( {item.variants || "NA"} )
+                            {/* <button onClick={()=>console.log(object)}>check</button> */}
                           </div>
                           <div>Rs. {item.productPrice || "00.00"}</div>
                         </div>
@@ -339,12 +317,7 @@ const Cart = ({
                       <div className="absolute top-1 right-1 bg-white rounded-[50%] px-1 cursor-pointer">
                         <FontAwesomeIcon
                           icon={faClose}
-                          onClick={() =>
-                            handleRemoveFromOrder(
-                              item._id,
-                              item.selectedSizes[0]
-                            )
-                          }
+                          onClick={() => handleRemoveFromOrder(item._id)}
                         />
                       </div>
                       <div className="basis-[27%] rounded-[50%]">
@@ -358,8 +331,9 @@ const Cart = ({
                       </div>
                       <div className="flex flex-col basis-[37%]">
                         <div className="capitalize">
-                          {item.name}{" "}
+                          {item.name}
                           {item.selectedSizes.length > 0 &&
+                            item.selectedSizes[0] !== "" &&
                             ` (${item.selectedSizes.join(", ")})`}
                         </div>
                         <div>Rs. {item.price || "00.00"}</div>
@@ -398,15 +372,22 @@ const Cart = ({
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col   gap-2 mb-4 h-[450px] max-h-[450px] overflow-auto border p-2">
+              <div className="flex flex-col    gap-2 mb-4 h-[450px] max-h-[450px] overflow-auto border p-2">
                 {draftItem.map((item: any, index: number) => (
                   <div
                     key={index}
-                    className="bg-lightdisable  relative flex justify-between rounded-md px-4 py-2 items-center hover:scale-[0.9] cursor-pointer"
+                    className="bg-lightdisable relative  flex justify-between rounded-md px-4 py-2 items-center hover:scale-[0.9] cursor-pointer"
                     onClick={() => {
                       setActiveTab("newOrderBill");
                       setSelectedDraftItem(item);
                       setIsDraftItemSelected(true);
+                      console.log("sdsdsd",selectedDraftItem)
+                      // setTimeout(() => {
+                      //   setSelectedDraftItem((pre: any) => ({
+                      //     ...pre,
+                      //     isDraft: false,
+                      //   }));
+                      // }, 2000);
                     }}
                   >
                     <div className="flex flex-col gap-1">
@@ -512,7 +493,9 @@ const Cart = ({
               <Button
                 label={"Place Order"}
                 className={` text-white rounded-md w-1/2`}
-                onClick={() => handlePlaceOrder(false)}
+                onClick={() => {
+                  handlePlaceOrder(false);
+                }}
               />
               <Button
                 label={"Draft"}
