@@ -30,27 +30,26 @@ function Sales() {
     message: string;
   } | null>(null);
 
-  useEffect(() => {
-    const fetchCatagory = async () => {
-      try {
-        const response = await getAllCatagory();
-        setCatagory(response);
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
-      }
-    };
+  const fetchCatagory = async () => {
+    try {
+      const response = await getAllCatagory();
+      setCatagory(response);
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+    }
+  };
 
-    fetchCatagory();
-  }, []);
+  const fetchItems = async () => {
+    try {
+      const response = await getAllItem();
+      setItems(response);
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const response = await getAllItem();
-        setItems(response);
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
-      }
-    };
+    fetchCatagory();
     fetchItems();
   }, []);
 
@@ -218,7 +217,7 @@ function Sales() {
       setSelectedItems([]);
       setSelectedSizes({});
     } catch (error) {
-      console.log("error", error);
+      console.error("Failed to Placed Order", error);
     }
   };
 
@@ -249,7 +248,7 @@ function Sales() {
 
       setDraftItem(response.orders);
     } catch (error) {
-      console.log("error", error);
+      console.error("Failed to Fetch Draft Order", error);
     }
   };
 

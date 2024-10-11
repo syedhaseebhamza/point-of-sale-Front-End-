@@ -6,21 +6,22 @@ function Order() {
   const [orders, setOrders] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const fetchOrders = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetchPlaceOrder();
+      const filterData = response.orders.flatMap(
+        (item: any) => item.productData
+      );
+      setOrders(filterData);
+      setIsLoading(true);
+    } catch (error) {
+      console.error("Failed to fetch orders", error);
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetchPlaceOrder();
-        const filterData = response.orders.flatMap(
-          (item: any) => item.productData
-        );
-        setOrders(filterData);
-        setIsLoading(true);
-      } catch (error) {
-        console.error("Failed to fetch orders", error);
-        setIsLoading(false);
-      }
-    };
     fetchOrders();
   }, []);
 

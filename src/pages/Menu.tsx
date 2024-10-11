@@ -1,5 +1,4 @@
 import Button from "@/components/common/button";
-import React from "react";
 
 function Menu() {
   return (

@@ -19,8 +19,6 @@ const Cart = ({
   setSelectedDraftItem,
   selectedDraftItem,
   items,
-
-  
 }: any) => {
   const [activeTab, setActiveTab] = useState("newOrderBill");
   const [isDraftItemSelected, setIsDraftItemSelected] = useState(false);
@@ -37,7 +35,7 @@ const Cart = ({
 
       setDraftItem(response.orders);
     } catch (error) {
-      console.log("error", error);
+      console.error("Failed to Fetched Draft Order", error);
     }
   };
 
@@ -149,7 +147,7 @@ const Cart = ({
       setSelectedItems([]);
       setSelectedSizes({});
     } catch (error) {
-      console.log("error", error);
+      console.error("Failed to Placed Order", error);
     }
   };
 
@@ -519,13 +517,13 @@ const Cart = ({
               <Button
                 label={"Draft"}
                 className={` text-white rounded-md w-1/2`}
-                onClick={() => {handlePlaceOrder(true)
+                onClick={() => {
+                  handlePlaceOrder(true);
                   setToast({
                     type: "success",
                     message: "Item Add to Draft successfully!",
                   });
-                }
-                }
+                }}
               />
               <Button
                 label={"Update"}
@@ -538,14 +536,14 @@ const Cart = ({
           </div>
         </div>
         <div className=" absolute  top-[6rem]  right-0">
-        {toast && (
-          <ToastMessage
-            type={toast.type}
-            message={toast.message}
-            onClose={() => setToast(null)}
-          />
-        )}
-      </div>
+          {toast && (
+            <ToastMessage
+              type={toast.type}
+              message={toast.message}
+              onClose={() => setToast(null)}
+            />
+          )}
+        </div>
       </div>
     </>
   );

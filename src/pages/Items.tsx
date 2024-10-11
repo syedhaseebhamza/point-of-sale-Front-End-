@@ -1,7 +1,7 @@
 import ItemModal from "@/components/ItemModal";
 import Button from "@/components/common/button";
 import Modal from "@/components/common/modal/modal";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getAllCatagory } from "@/app/features/catagory/catagoryApi";
 import { getAllItem, handelDeleteItem } from "@/app/features/Item/itemApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -49,46 +49,46 @@ function Items() {
   };
 
   const closeItemModal = () => setShowItemModal(false);
-  useEffect(() => {
-    const fetchCatagory = async () => {
-      try {
-        setIsLoading(true);
-        const response = await getAllCatagory();
-        setCatagory(response);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
-        setIsLoading(false);
-      }
-    };
 
+  const fetchCatagory = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getAllCatagory();
+      setCatagory(response);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+      setIsLoading(false);
+    }
+  };
+
+  const fetchItems = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getAllItem();
+      setItems(response);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchCatagory();
-  }, []);
-  useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        setIsLoading(true);
-        const response = await getAllItem();
-        setItems(response);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
-        setIsLoading(false);
-      }
-    };
-
     fetchItems();
   }, []);
 
+  
   const handelUpdateItem = async () => {
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const responce = await getAllItem();
       setItems(responce);
-      setIsLoading(false)
+      setIsLoading(false);
     } catch (error) {
       console.error("Failed to fetch categories", error);
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
@@ -101,14 +101,14 @@ function Items() {
       .then((res) => {
         const filterItem = items.filter((item: any) => item._id !== id);
         setItems(filterItem);
-        setIsLoading(false)
+        setIsLoading(false);
         setToast({
           type: "success",
           message: "Item deleted successfully!",
         });
       })
       .catch((error) => {
-        setIsLoading(false)
+        setIsLoading(false);
         setToast({
           type: "error",
           message: error.message,

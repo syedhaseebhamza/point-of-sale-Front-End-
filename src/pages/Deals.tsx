@@ -42,48 +42,52 @@ function Deals() {
     const response = await getAllDeals();
     setdeals(response.deals);
     setIsModalLoading(false);
+  };
 
-  }
-  useEffect(() => {
-    const fetchCatagory = async () => {
-      try {
-        setIsLoading(true);
-        const response = await getAllCatagory();
-        setCatagory(response);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
-        setIsLoading(false);
-      }
-    };
+  const fetchCatagory = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getAllCatagory();
+      setCatagory(response);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+      setIsLoading(false);
+    }
+  };
 
-    fetchCatagory();
-  }, []);
+  const fetchDeals = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getAllDeals();
+      setdeals(response.deals);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+      setIsLoading(false);
+    }
+  };
 
-  useEffect(() => {
-    const fetchDeals = async () => {
-      try {
-        setIsLoading(true);
-        const response = await getAllDeals();
-        setdeals(response.deals);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
-        setIsLoading(false);
-      }
-    };
-    fetchDeals();
-  }, []);
+  const fetchItems = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getAllItem();
+      setItems(response);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+      setIsLoading(false);
+    }
+  };
 
   const handelUpdateDeal = async () => {
     try {
       setIsLoading(true);
       const responce = await getAllDeals();
       setdeals(responce.deals);
-      console.log("responce get ALL", responce);
       setIsLoading(false);
     } catch (error) {
-      console.error("Failed to fetch categories", error);
+      console.error("Failed to fetch Deals", error);
       setIsLoading(false);
     }
   };
@@ -113,18 +117,8 @@ function Deals() {
   };
 
   useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        setIsLoading(true);
-        const response = await getAllItem();
-        setItems(response);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
-        setIsLoading(false);
-      }
-    };
-
+    fetchCatagory();
+    fetchDeals();
     fetchItems();
   }, []);
 
@@ -158,49 +152,50 @@ function Deals() {
                   </div>
                 ))}
             </div>
-            {!isModalLoading && deals?.map((item: any) => (
-              <div
-                key={item._id}
-                className="border-b border-gray-300 p-4 flex flex-col md:flex-row justify-between items-start md:items-center"
-              >
-                {headers?.slice(0, -1)?.map((header) => (
-                  <div key={header.key} className="w-1/6 text-gray-700">
-                    {header.key === "image" ? (
-                      <div className="flex justify-start">
-                        <img
-                          className="border object-cover rounded-full h-20 w-20"
-                          src={item?.image || defaultimage}
-                          alt="img"
-                        />{" "}
-                      </div>
-                    ) : (
-                      item[header.key] || ""
+            {!isModalLoading &&
+              deals?.map((item: any) => (
+                <div
+                  key={item._id}
+                  className="border-b border-gray-300 p-4 flex flex-col md:flex-row justify-between items-start md:items-center"
+                >
+                  {headers?.slice(0, -1)?.map((header) => (
+                    <div key={header.key} className="w-1/6 text-gray-700">
+                      {header.key === "image" ? (
+                        <div className="flex justify-start">
+                          <img
+                            className="border object-cover rounded-full h-20 w-20"
+                            src={item?.image || defaultimage}
+                            alt="img"
+                          />{" "}
+                        </div>
+                      ) : (
+                        item[header.key] || ""
+                      )}
+                    </div>
+                  ))}
+                  <div className="w-1/6 flex items-center gap-4">
+                    {actions.map((action) =>
+                      action.action === "edit" ? (
+                        <span key={action.action}>
+                          <FontAwesomeIcon
+                            className="cursor-pointer"
+                            icon={action.icon}
+                            onClick={() => openItemEditModal(item._id)}
+                          />
+                        </span>
+                      ) : (
+                        <span key={action.action}>
+                          <FontAwesomeIcon
+                            className="cursor-pointer"
+                            icon={action.icon}
+                            onClick={() => handelDeleteDeal(item._id)}
+                          />
+                        </span>
+                      )
                     )}
                   </div>
-                ))} 
-                <div className="w-1/6 flex items-center gap-4">
-                  {actions.map((action) =>
-                    action.action === "edit" ? (
-                      <span key={action.action}>
-                        <FontAwesomeIcon
-                          className="cursor-pointer"
-                          icon={action.icon}
-                          onClick={() => openItemEditModal(item._id)}
-                        />
-                      </span>
-                    ) : (
-                      <span key={action.action}>
-                        <FontAwesomeIcon
-                          className="cursor-pointer"
-                          icon={action.icon}
-                          onClick={() => handelDeleteDeal(item._id)}
-                        />
-                      </span>
-                    )
-                  )}
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
         <Modal onModalClose={closeItemModal} isModalOpen={showDealModal}>

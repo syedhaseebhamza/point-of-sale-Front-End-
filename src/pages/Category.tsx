@@ -22,31 +22,31 @@ function Category() {
     type: "success" | "error";
     message: string;
   } | null>(null);
+
   const openCatagaryModal = () => {
     setIsEditMode(false);
     setShowCatagaryModal(true);
   };
+
   const closeCatagaryModal = () => setShowCatagaryModal(false);
 
-  useEffect(() => {
-    const fetchCatagory = async () => {
-      try {
-        setIsLoading(true);
-        const response = await getAllCatagory();
-        setAllCatagory(response);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
-        setIsLoading(false);
-      }
-    };
 
-    fetchCatagory();
-  }, []);
+  const fetchCatagory = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getAllCatagory();
+      setAllCatagory(response);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+      setIsLoading(false);
+    }
+  };
 
   const handleNewCategory = (newCategory: any) => {
     setAllCatagory((prevCategories: any) => [...prevCategories, newCategory]);
   };
+
 
   const handleCategoryUpdated = async () => {
     try {
@@ -79,6 +79,10 @@ function Category() {
         setIsLoading(false);
       });
   };
+
+  useEffect(() => {
+    fetchCatagory();
+  }, []);
 
   return (
     <>
@@ -116,7 +120,6 @@ function Category() {
                     icon={faEdit}
                     onClick={() => {
                       setSelectedCategoryId(item._id);
-                      // setShowCatagaryEditModal(true);
                       openCatagaryModal();
                       setIsEditMode(true);
                     }}
@@ -146,6 +149,7 @@ function Category() {
             isEditMode={isEditMode}
           />
         </Modal>
+        
         <div className=" absolute  top-[-6rem]  right-0">
           {toast && (
             <ToastMessage
