@@ -72,7 +72,7 @@ export const handelFetchAllDraftItem = async (isDraft: boolean) => {
   const params = isDraft ? { isDraft } : {};
   try {
     const response = await makeApiCall<any>({
-      url: `api/all/order`,
+      url: `api/all/draft/order`,
       method: "GET",
       params,
     });
