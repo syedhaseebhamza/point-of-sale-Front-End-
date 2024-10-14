@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   handelPlaceOrder,
   handelFetchAllDraftItem,
@@ -10,7 +10,6 @@ import default2 from "../Images/default_rectangle.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import ToastMessage from "./common/toast";
-import { isDraft } from "@reduxjs/toolkit";
 
 const Cart = ({
   selectedItems,
@@ -21,6 +20,7 @@ const Cart = ({
   selectedDraftItem,
   items,
 }: any) => {
+  const [totalPrice, setTotalPrice] = useState<any>();
   const [activeTab, setActiveTab] = useState("newOrderBill");
   const [isDraftItemSelected, setIsDraftItemSelected] = useState(false);
   const [draftItem, setDraftItem] = useState<any>([]);
@@ -28,13 +28,19 @@ const Cart = ({
     type: "success" | "error";
     message: string;
   } | null>(null);
-  const transformedData = selectedItems.map((item: any) => ({
+
+  const transformedProductData = selectedItems.map((item: any) => ({
     isDeleted: false,
     productId: item._id,
     productName: item.name,
     productPrice: item.price,
     productQuantity: item.quantity,
     variants: item.selectedSizes[0] || item.selectedSizes[""],
+  }));
+
+
+  const transformedProductCategory = selectedItems.map((item: any) => ({
+    categoryId: item.categoryId
   }));
 
   const clearall = () => {
@@ -87,7 +93,7 @@ const Cart = ({
   };
 
   const calculateSubtotal = (items: any[], isDraft = false) => {
-    return items.reduce((total: number, item: any) => {
+    return items?.reduce((total: number, item: any) => {
       const price = isDraft ? item.productPrice : item.price;
       const quantity = isDraft ? item.productQuantity : item.quantity;
       return total + (price || 0) * quantity;
@@ -95,7 +101,7 @@ const Cart = ({
   };
 
   const calculateDiscount = (items: any[], isDraft = false) => {
-    return items.reduce((total: number, item: any) => {
+    return items?.reduce((total: number, item: any) => {
       const price = isDraft ? item.productPrice : item.price;
       const quantity = isDraft ? item.productQuantity : item.quantity;
       return total - (price || 0) * quantity;
@@ -103,11 +109,14 @@ const Cart = ({
   };
 
   const handlePlaceOrder = async (isDraft: boolean) => {
-    const totalPrice = selectedItems.reduce((total: number, item: any) => {
-      return total + item.price * item.quantity;
-    }, 0);
+    const totalOrderPrice = selectedItems?.reduce(
+      (total: number, item: any) => {
+        return total + item.price * item.quantity;
+      },
+      0
+    );
 
-    const discount = totalPrice * 0.1;
+    const discount = totalOrderPrice * 0.1;
 
     const data = {
       categoryData: selectedItems.map((item: any) => ({
@@ -121,19 +130,19 @@ const Cart = ({
         variants: item.selectedSizes[0],
       })),
       discount: discount,
-      totalPrice: totalPrice - discount,
+      totalPrice: totalOrderPrice - discount,
       isDraft,
     };
-    if (isDraftItemSelected) {
-      const data2 = {
+    if (isDraftItemSelected && isDraft === false) {
+      const draftData = {
         Date: selectedDraftItem.Date,
-        categoryData: selectedDraftItem.categoryData,
-        productData: [...selectedDraftItem.productData, ...transformedData],
+        categoryData: [...selectedDraftItem.categoryData, ...transformedProductCategory],
+        productData: [...selectedDraftItem.productData, ...transformedProductData],
         discount: selectedDraftItem.discount,
-        totalPrice: selectedDraftItem.totalPrice,
+        totalPrice: totalPrice,
         isDraft: false,
       };
-      await handelPlaceOrder(data2);
+      await handelPlaceOrder(draftData);
       DeleteOrders(selectedDraftItem._id);
       setSelectedItems([]);
       setSelectedSizes({});
@@ -172,15 +181,32 @@ const Cart = ({
     );
   };
 
+  useEffect(() => {
+    const total =
+      calculateTotal(selectedItems) +
+      calculateTotal(selectedDraftItem?.productData, true);
+    setTotalPrice(total);
+  }, [
+    calculateTotal(selectedItems),
+    calculateTotal(selectedDraftItem?.productData, true),
+  ]);
+
   const UpdateOrder = async () => {
-    [
-      {
-        ...selectedDraftItem,
-        productData: selectedDraftItem.productData.push(...transformedData),
-      },
-    ];
+    // [
+    //   {
+    //     ...selectedDraftItem,
+    //     totalPrice: 122222222,
+    //     productData: selectedDraftItem.productData.push(...transformedProductData),
+    //   },
+    // ];
+    const UpdateDraftData = {
+      categoryData: [...selectedDraftItem.categoryData, ...transformedProductCategory],
+      productData: [...selectedDraftItem.productData, ...transformedProductData],
+      totalPrice,
+    };
+
     try {
-      await handelUpdateOrder(selectedDraftItem, selectedDraftItem._id);
+      await handelUpdateOrder(UpdateDraftData, selectedDraftItem._id);
       setSelectedItems([]);
       clearall();
       handleDraftTab();
@@ -259,7 +285,6 @@ const Cart = ({
                         <div className="flex flex-col basis-[37%]">
                           <div className="capitalize">
                             {item.productName} ( {item.variants || "NA"} )
-                            {/* <button onClick={()=>console.log(object)}>check</button> */}
                           </div>
                           <div>Rs. {item.productPrice || "00.00"}</div>
                         </div>
@@ -338,7 +363,7 @@ const Cart = ({
                       <div className="flex flex-col basis-[37%]">
                         <div className="capitalize">
                           {item.name}
-                          {item.selectedSizes.length > 0 &&
+                          {item.selectedSizes?.length > 0 &&
                             item.selectedSizes[0] !== "" &&
                             ` (${item.selectedSizes.join(", ")})`}
                         </div>
@@ -387,13 +412,6 @@ const Cart = ({
                       setActiveTab("newOrderBill");
                       setSelectedDraftItem(item);
                       setIsDraftItemSelected(true);
-                      console.log("sdsdsd", selectedDraftItem);
-                      // setTimeout(() => {
-                      //   setSelectedDraftItem((pre: any) => ({
-                      //     ...pre,
-                      //     isDraft: false,
-                      //   }));
-                      // }, 2000);
                     }}
                   >
                     <div className="flex flex-col gap-1">
@@ -415,7 +433,7 @@ const Cart = ({
                         Date: {formatDate(item.Date)}
                       </div>
                       <div className="text-xs text-gray-500">
-                        {item.productData.length} items
+                        {item.productData?.length} items
                       </div>
                       <div className="text-sm font-semibold text-gray-800">
                         Total: {item.totalPrice}
@@ -436,7 +454,7 @@ const Cart = ({
                 <div className="flex gap-4 mb-2">
                   <span className="font-bold">Discount 10%</span>
                   <span className="text-success">
-                    Rs.{(calculateDiscount(selectedItems) * 0.1).toFixed(2)}
+                    Rs.{(calculateDiscount(selectedItems) * 0.1)?.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex gap-4 mb-2">
@@ -457,7 +475,7 @@ const Cart = ({
                         {calculateSubtotal(
                           selectedDraftItem?.productData,
                           true
-                        ).toFixed(2)}
+                        )?.toFixed(2)}
                       </span>
                     </div>
                     <div className="flex gap-4 mb-2">
@@ -469,7 +487,7 @@ const Cart = ({
                             selectedDraftItem?.productData,
                             true
                           ) * 0.1
-                        ).toFixed(2)}
+                        )?.toFixed(2)}
                       </span>
                     </div>
                     <div className="flex gap-4 mb-2">
@@ -480,7 +498,7 @@ const Cart = ({
                         {calculateTotal(
                           selectedDraftItem?.productData,
                           true
-                        ).toFixed(2)}
+                        )?.toFixed(2)}
                       </span>
                     </div>
                     <div className="flex mb-4 gap-4 align-items-center">
