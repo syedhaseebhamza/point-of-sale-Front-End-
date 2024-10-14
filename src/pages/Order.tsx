@@ -14,7 +14,7 @@ function Order() {
         (item: any) => item.productData
       );
       setOrders(filterData);
-      setIsLoading(true);
+      setIsLoading(false);
     } catch (error) {
       console.error("Failed to fetch orders", error);
       setIsLoading(false);

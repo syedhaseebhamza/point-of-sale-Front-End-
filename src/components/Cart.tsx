@@ -124,18 +124,26 @@ const Cart = ({
       totalPrice: totalPrice - discount,
       isDraft,
     };
-
-    if (isDraftItemSelected && !isDraft) {
-      setSelectedDraftItem((prevState: any) => ({
-        productData: [...prevState.productData, ...transformedData],
-        isDraft: isDraft,
-      }));
+    if (isDraftItemSelected) {
+      const data2 = {
+        Date: selectedDraftItem.Date,
+        categoryData: selectedDraftItem.categoryData,
+        productData: [...selectedDraftItem.productData, ...transformedData],
+        discount: selectedDraftItem.discount,
+        totalPrice: selectedDraftItem.totalPrice,
+        isDraft: false,
+      };
+      await handelPlaceOrder(data2);
+      DeleteOrders(selectedDraftItem._id);
+      setSelectedItems([]);
+      setSelectedSizes({});
+      clearall();
+      setActiveTab("newOrderBill");
+      return;
     }
-    console.log("selectedDraftItem", selectedDraftItem);
-    console.log("data", data);
 
     try {
-      await handelPlaceOrder(isDraftItemSelected ? selectedDraftItem : data);
+      await handelPlaceOrder(data);
       setSelectedItems([]);
       setSelectedSizes({});
       clearall();
@@ -143,8 +151,6 @@ const Cart = ({
       console.error("Failed to Placed Order", error);
     }
   };
-
-  
 
   const calculateTotal = (items: any[], isDraft = false) => {
     const subtotal = calculateSubtotal(items, isDraft);
@@ -381,7 +387,7 @@ const Cart = ({
                       setActiveTab("newOrderBill");
                       setSelectedDraftItem(item);
                       setIsDraftItemSelected(true);
-                      console.log("sdsdsd",selectedDraftItem)
+                      console.log("sdsdsd", selectedDraftItem);
                       // setTimeout(() => {
                       //   setSelectedDraftItem((pre: any) => ({
                       //     ...pre,
