@@ -41,17 +41,32 @@ export const handelPlaceOrder = async (data: any) => {
   }
 };
 
-export const fetchPlaceOrder = async () => {
+export const fetchPlaceOrder = async (isDraft?: boolean, date?: string, page: number = 1, limit: number = 10) => {
   try {
+    const queryParams = new URLSearchParams();
+
+    if (isDraft !== undefined) {
+      queryParams.append("isDraft", isDraft.toString());
+    }
+    
+    if (date) {
+      queryParams.append("date", date);
+    }
+
+    queryParams.append("page", page.toString());
+    queryParams.append("limit", limit.toString());
+
     const response = await makeApiCall<any>({
-      url: `api/all/order`,
+      url: `api/all/order?${queryParams.toString()}`,
       method: "GET",
     });
+
     return response;
   } catch (error: any) {
-    throw new Error(error.response.data.message || "Failed to fetch order");
+    throw new Error(error.response?.data?.message || "Failed to fetch orders");
   }
 };
+
 
 export const handelFetchAllDraftItem = async (isDraft: boolean) => {
   const params = isDraft ? { isDraft } : {};
