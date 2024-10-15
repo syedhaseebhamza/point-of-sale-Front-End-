@@ -1,17 +1,26 @@
-import { fetchPlaceOrder } from "@/app/features/sales/salesApi";
+import {
+  fetchPlaceOrder,
+  handelUpdateOrder,
+} from "@/app/features/sales/salesApi";
 import Loader from "@/components/common/Loader/Loader";
 import { useEffect, useState } from "react";
 import IosShareIcon from "@mui/icons-material/IosShare";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
+import OrderDetailModal from "@/components/OrderDetailModal";
 
 function Order() {
   const [orders, setOrders] = useState<any>([]);
+  const [orderProduct, setOrderProduct] = useState<any>([]);
+  const [orderID, setOrderID] = useState<any>();
+  const [totalBill, setTotalBill] = useState<any>();
   const [exports, setExports] = useState<any>([]);
   const [totalSale, setTotalSale] = useState<any>();
+  const [countOrders, setCountOrders] = useState<any>();
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
@@ -30,12 +39,18 @@ function Order() {
       setOrders(response.orders);
       setExports(response.forExport);
       setTotalSale(response.totalSale);
+      setCountOrders(response.countOrders);
       setTotalPages(response.totalPages);
       setIsLoading(false);
     } catch (error) {
       console.error("Failed to fetch orders", error);
       setIsLoading(false);
     }
+  };
+
+  const handleUpdateStatus = async (id: any, status: any) => {
+    await handelUpdateOrder(status, id);
+    fetchOrders(currentPage);
   };
 
   useEffect(() => {
@@ -57,12 +72,6 @@ function Order() {
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDate(event.target.value);
     setCurrentPage(1);
-  };
-
-  const applyDiscount = (price: any) => {
-    const discountRate = 0.1;
-    const discountedPrice = price * (1 - discountRate);
-    return discountedPrice.toFixed(2);
   };
 
   const renderPageNumbers = () => {
@@ -106,20 +115,26 @@ function Order() {
 
     doc.setFontSize(12);
     doc.text(`Date: ${selectedDate}`, 14, 30);
-    doc.text(`Total Sale: Rs ${totalSale}`, 14, 36);
+    doc.text(`Total Orders: ${countOrders}`, 14, 36);
+    doc.text(`Total Sale: Rs ${totalSale}`, 14, 42);
 
-    const tableData = exports.map((item: any, index: number) => [
-      index + 1 + (currentPage - 1) * 10,
-      item.productName,
-      item.variants || "N/A",
-      item.productQuantity,
-      `Rs ${applyDiscount(item.productPrice)}`,
-      `Rs ${applyDiscount(item.productQuantity * item.productPrice)}`,
+    const tableData = exports.map((item: any, index:any) => [
+      index + 1,
+      item.orderId,
+      item.productData
+        .map((product: any) => {
+          const variantValue = product.variants || "N/A";
+
+          return `${product.productQuantity} ${product.productName} (${variantValue})`;
+        })
+        .join(", "),
+      item.orderTime,
+      item.totalPrice,
     ]);
 
     // @ts-ignore
     (doc as any).autoTable({
-      head: [["Sr No", "Order", "Variant", "Quantity", "Price", "Total"]],
+      head: [["Sr No","Order ID", "Products", "Time", "Total"]],
       body: tableData,
       startY: 45,
       headStyles: {
@@ -127,9 +142,36 @@ function Order() {
         textColor: [255, 255, 255],
         fontStyle: "bold",
       },
+      styles: {
+        cellPadding: 3,
+        minCellHeight: 8,
+        overflow: "linebreak",
+        valign: "middle",
+        lineColor: [0, 0, 0],
+        lineWidth: 0.2,
+        fillColor: [255, 255, 255],
+      },
+      columnStyles: {
+        3: {
+          cellWidth: 22,
+        },
+      },
+      theme: "grid",
     });
 
     doc.save("order_details.pdf");
+  };
+  const statusOptions = ["delivered", "canceled"];
+
+  const getStatusClass = (status: any) => {
+    switch (status) {
+      case "delivered":
+        return "bg-green-500 text-white";
+      case "canceled":
+        return "bg-red-500 text-white";
+      default:
+        return "bg-gray-300 text-black";
+    }
   };
 
   return (
@@ -160,6 +202,10 @@ function Order() {
           />
         </div>
         <div className="bg-white mx-auto p-6 rounded-lg shadow-md w-full max-w-xs">
+          <h5 className="text-center uppercase font-semibold">Total Orders</h5>
+          <p className="text-center mt-4">{countOrders}</p>
+        </div>
+        <div className="bg-white mx-auto p-6 rounded-lg shadow-md w-full max-w-xs">
           <h5 className="text-center uppercase font-semibold">Total Sale</h5>
           <p className="text-center mt-4">Rs {totalSale}</p>
         </div>
@@ -168,23 +214,23 @@ function Order() {
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" className="px-6 py-3">
-                Sr No
+              <th scope="col" className="px-6 py-3 text-center">
+                Order ID
               </th>
-              <th scope="col" className="px-6 py-3">
-                Order
+              <th scope="col" className="px-6 py-3 text-center">
+                Products
               </th>
-              <th scope="col" className="px-6 py-3">
-                Variant
+              <th scope="col" className="px-6 py-3 text-center">
+                Time
               </th>
-              <th scope="col" className="px-6 py-3">
-                Quantity
+              <th scope="col" className="px-6 py-3 text-center">
+                Total Price
               </th>
-              <th scope="col" className="px-6 py-3">
-                Price
+              <th scope="col" className="px-6 py-3 text-center">
+                Status
               </th>
-              <th scope="col" className="px-6 py-3">
-                Total
+              <th scope="col" className="px-6 py-3 text-center">
+                Action
               </th>
             </tr>
           </thead>
@@ -192,20 +238,62 @@ function Order() {
             {orders.length > 0
               ? orders.map((item: any, index: number) => (
                   <tr key={index}>
-                    <td className="px-6 py-4">
-                      {index + 1 + (currentPage - 1) * 10}
+                    <td className="px-6 py-4 text-center font-bold">
+                      {item.orderId}
                     </td>
-                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                      {item.productName}
+                    <td className="px-6 py-4 font-medium text-center text-gray-900 whitespace-nowrap dark:text-white">
+                      {item.productData.map((product: any, prodIndex: any) => {
+                        const variantValue = product.variants
+                          ? product.variants
+                          : "N/A";
+                        return (
+                          <div key={prodIndex}>
+                            {product.productQuantity} {product.productName} (
+                            {variantValue}),
+                          </div>
+                        );
+                      })}
                     </td>
-                    <td className="px-6 py-4">{item.variants || "N/A"}</td>
-                    <td className="px-6 py-4">{item.productQuantity}</td>
-                    <td className="px-6 py-4">
-                      Rs {applyDiscount(item.productPrice)}
+                    <td className="px-6 py-4 text-center">{item.orderTime}</td>
+                     <td className="px-6 py-4 text-center">{item.totalPrice}</td>
+                    <td className="px-6 py-4 text-center">
+                      <select
+                        value={item.status}
+                        onChange={(e) =>
+                          handleUpdateStatus(item._id, {
+                            status: e.target.value,
+                          })
+                        }
+                        className={`border w-full text-center border-gray-300 rounded-md p-1 ${getStatusClass(
+                          item.status
+                        )}`}
+                      >
+                        {statusOptions.map((status) => (
+                          <option key={status} value={status}>
+                            {status}
+                          </option>
+                        ))}
+                      </select>
                     </td>
-                    <td className="px-6 py-4">
-                      Rs{" "}
-                      {applyDiscount(item.productQuantity * item.productPrice)}
+                    <td className="px-6 py-4 text-center">
+                      <button
+                        className="bg-primary text-white rounded px-4 py-2"
+                        onClick={() => {
+                          setOrderProduct(item.productData);
+                          setOrderID(item.orderId);
+                          setTotalBill(item.totalPrice);
+                          setIsModalOpen(true);
+                        }}
+                      >
+                        Show Order Details
+                      </button>
+                      <OrderDetailModal
+                        isOpen={isModalOpen}
+                        setIsModalOpen={setIsModalOpen}
+                        orderProduct={orderProduct}
+                        orderID={orderID}
+                        totalBill={totalBill}
+                      />
                     </td>
                   </tr>
                 ))
