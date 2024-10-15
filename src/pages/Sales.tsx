@@ -39,6 +39,13 @@ function Sales() {
       setIsLoading(true);
       setItems(response);
       setIsLoading(false);
+      const initialSizes: any = {};
+      response.forEach((item: any) => {
+        if (item.variants && item.variants.length > 0) {
+          initialSizes[item._id] = [item.variants[0].size];
+        }
+      });
+      setSelectedSizes(initialSizes);
     } catch (error) {
       console.error("Failed to fetch Items", error);
       setIsLoading(false);
@@ -62,7 +69,7 @@ function Sales() {
     fetchItems();
     fetchDeals();
   }, []);
-  
+
   const handleItemClick = async (name: string, categoryId: string) => {
     try {
       const dealNames = ["Deals", "Deal", "deal", "deals"];
@@ -79,7 +86,6 @@ function Sales() {
       console.error("Error fetching items for category:", error);
     }
   };
-  
 
   const handleAddToOrder = (item: any) => {
     const selectedItemSizes = selectedSizes[item._id] || [];
