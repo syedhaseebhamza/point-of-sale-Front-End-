@@ -270,6 +270,7 @@ function Sales() {
           </div>
         </div>
         <Cart
+          fetchItems={fetchItems}
           selectedItems={selectedItems}
           setSelectedItems={setSelectedItems}
           setItems={setItems}

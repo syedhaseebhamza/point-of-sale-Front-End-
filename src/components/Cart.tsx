@@ -12,6 +12,7 @@ import { faClose } from "@fortawesome/free-solid-svg-icons";
 import ToastMessage from "./common/toast";
 
 const Cart = ({
+  fetchItems,
   selectedItems,
   setSelectedItems,
   setItems,
@@ -156,6 +157,7 @@ const Cart = ({
       setSelectedItems([]);
       setSelectedSizes({});
       clearall();
+      fetchItems()
     } catch (error) {
       console.error("Failed to Placed Order", error);
     }
@@ -192,13 +194,6 @@ const Cart = ({
   ]);
 
   const UpdateOrder = async () => {
-    // [
-    //   {
-    //     ...selectedDraftItem,
-    //     totalPrice: 122222222,
-    //     productData: selectedDraftItem.productData.push(...transformedProductData),
-    //   },
-    // ];
     const UpdateDraftData = {
       categoryData: [...selectedDraftItem.categoryData, ...transformedProductCategory],
       productData: [...selectedDraftItem.productData, ...transformedProductData],
