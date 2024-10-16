@@ -1,0 +1,22 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "index.html",
+        "use": "@vercel/static-build",
+        "config": {
+          "distDir": "dist"
+        }
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "/$1"
+      }
+    ],
+    "env": {
+      "VITE_BASE_URL": "https://point-of-sale-backend-nwu6.vercel.app"
+    }
+  }
+  
