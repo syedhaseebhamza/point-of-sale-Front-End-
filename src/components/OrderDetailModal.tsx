@@ -22,8 +22,8 @@ const OrderDetailModal: React.FC<DataModalProps> = ({
 }) => {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-50 flex justify-center items-center bg-black opacity-25">
-      <div className="bg-white rounded-lg shadow-lg w-11/12 md:w-3/4 lg:w-1/2 p-6 relative">
+    <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-20">
+      <div className="bg-white rounded-lg shadow-xl w-11/12 md:w-3/4 lg:w-1/2 p-6 relative">
         <button
           className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 rounded-full w-10 h-10 flex items-center justify-center text-2xl"
           onClick={() => {
