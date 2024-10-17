@@ -65,7 +65,6 @@ function Sidebar({ sidebarWidth }: any) {
         onClick={() => {
           localStorage.clear();
           navigate("/");
-          window.location.href = "/";
         }}
       >
         {sidebarWidth ? (
