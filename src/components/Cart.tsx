@@ -10,6 +10,7 @@ import default2 from "../Images/default_rectangle.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import ToastMessage from "./common/toast";
+import { generatePDFReceipt } from "@/utils/receiptUtils";
 
 const Cart = ({
   fetchItems,
@@ -39,9 +40,8 @@ const Cart = ({
     variants: item.selectedSizes[0] || item.selectedSizes[""],
   }));
 
-
   const transformedProductCategory = selectedItems.map((item: any) => ({
-    categoryId: item.categoryId
+    categoryId: item.categoryId,
   }));
 
   const clearall = () => {
@@ -137,8 +137,14 @@ const Cart = ({
     if (isDraftItemSelected && isDraft === false) {
       const draftData = {
         Date: selectedDraftItem.Date,
-        categoryData: [...selectedDraftItem.categoryData, ...transformedProductCategory],
-        productData: [...selectedDraftItem.productData, ...transformedProductData],
+        categoryData: [
+          ...selectedDraftItem.categoryData,
+          ...transformedProductCategory,
+        ],
+        productData: [
+          ...selectedDraftItem.productData,
+          ...transformedProductData,
+        ],
         discount: selectedDraftItem.discount,
         totalPrice: totalPrice,
         isDraft: false,
@@ -153,11 +159,12 @@ const Cart = ({
     }
 
     try {
-      await handelPlaceOrder(data);
+      const response = await handelPlaceOrder(data);
+      generatePDFReceipt(response.newOrder);
       setSelectedItems([]);
       setSelectedSizes({});
       clearall();
-      fetchItems()
+      fetchItems();
     } catch (error) {
       console.error("Failed to Placed Order", error);
     }
@@ -195,8 +202,14 @@ const Cart = ({
 
   const UpdateOrder = async () => {
     const UpdateDraftData = {
-      categoryData: [...selectedDraftItem.categoryData, ...transformedProductCategory],
-      productData: [...selectedDraftItem.productData, ...transformedProductData],
+      categoryData: [
+        ...selectedDraftItem.categoryData,
+        ...transformedProductCategory,
+      ],
+      productData: [
+        ...selectedDraftItem.productData,
+        ...transformedProductData,
+      ],
       totalPrice,
     };
 
