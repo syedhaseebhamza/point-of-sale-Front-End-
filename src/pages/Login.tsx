@@ -8,7 +8,7 @@ import {
   faEye,
   faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
-import loginimage from "../Images/login.jpg";
+import loginimage from "../Images/login.png";
 
 function Login() {
   const dispatch = useAppDispatch();

@@ -36,13 +36,7 @@ function Deals() {
     setShowDealModal(true);
   };
 
-  const closeItemModal = async () => {
-    setShowDealModal(false);
-    setIsModalLoading(true);
-    const response = await getAllDeals();
-    setdeals(response.deals);
-    setIsModalLoading(false);
-  };
+  const closeItemModal = async () => setShowDealModal(false)
 
   const fetchCatagory = async () => {
     try {

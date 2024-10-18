@@ -12,7 +12,7 @@ import {
   faShoppingCart,
 } from "@fortawesome/free-solid-svg-icons";
 import Button from "../common/button";
-import { SwitchIcon } from "../ui-icons";
+import { SwitchIcon, POSIcon } from "../ui-icons";
 
 const sideBarMenu = [
   { menuName: "User Management", path: "/user", icon: faUser },
@@ -35,14 +35,17 @@ function Sidebar({ sidebarWidth }: any) {
       }  min-h-screen `}
     >
       <div>
-        <ul className="space-y-4">
+        <ul className="space-y-4 flex flex-col justify-between items-center">
+          <POSIcon/>
           {sideBarMenu.map((menuItem) => (
             <li key={menuItem.path}>
               <NavLink
                 to={menuItem.path}
                 className={({ isActive }) =>
                   `p-3 rounded-[14px] flex gap-8 items-center ${
-                    isActive ? " bg-white text-primary hover:bg-hover_primary" : "hover:bg-hover_primary"
+                    isActive
+                      ? " bg-white text-primary hover:bg-hover_primary"
+                      : "hover:bg-hover_primary"
                   }`
                 }
               >
