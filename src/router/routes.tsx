@@ -9,6 +9,7 @@ import Menu from "@/pages/Menu";
 import Order from "@/pages/Order";
 import RolePermission from "@/pages/RolePermission";
 import Sales from "@/pages/Sales";
+import Setting from "@/pages/Setting";
 import UserPage from "@/pages/UserPage";
 import { Navigate, createBrowserRouter as Router } from "react-router-dom";
 
@@ -58,9 +59,13 @@ export const routes = Router([
         path: "/order",
         element: <Order />,
       },
+      // {
+      //   path: "/menu",
+      //   element: <Menu />,
+      // },
       {
-        path: "/menu",
-        element: <Menu />,
+        path: "/setting",
+        element: <Setting />,
       },
     ],
   },

@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import ToastMessage from "./common/toast";
 import { generatePDFReceipt } from "@/utils/receiptUtils";
+import { getAllDiscount } from "@/app/features/discount/discountApi";
 
 const Cart = ({
   fetchItems,
@@ -26,10 +27,16 @@ const Cart = ({
   const [activeTab, setActiveTab] = useState("newOrderBill");
   const [isDraftItemSelected, setIsDraftItemSelected] = useState(false);
   const [draftItem, setDraftItem] = useState<any>([]);
+  const [discountValue, setDiscountValue] = useState(0);
   const [toast, setToast] = useState<{
     type: "success" | "error";
     message: string;
   } | null>(null);
+
+  const getDiscount = async () => {
+    const response = await getAllDiscount();
+    setDiscountValue(response.discount);
+  };
 
   const transformedProductData = selectedItems.map((item: any) => ({
     isDeleted: false,
@@ -183,8 +190,8 @@ const Cart = ({
 
   const calculateTotal = (items: any[], isDraft = false) => {
     const subtotal = calculateSubtotal(items, isDraft);
-    const tax = subtotal * 0.1;
-    return subtotal - tax;
+    const discountAmount = (discountValue / 100) * subtotal;
+    return subtotal - discountAmount;
   };
 
   const handleQuantityChange = (
@@ -206,6 +213,7 @@ const Cart = ({
       calculateTotal(selectedItems) +
       calculateTotal(selectedDraftItem?.productData, true);
     setTotalPrice(total);
+    getDiscount()
   }, [
     calculateTotal(selectedItems),
     calculateTotal(selectedDraftItem?.productData, true),
@@ -479,7 +487,7 @@ const Cart = ({
                   </span>
                 </div>
                 <div className="flex gap-4 mb-2">
-                  <span className="font-bold">Discount 10%</span>
+                  <span className="font-bold">Discount {discountValue}%</span>
                   <span className="text-success">
                     Rs.{(calculateDiscount(selectedItems) * 0.1)?.toFixed(2)}
                   </span>
@@ -506,7 +514,7 @@ const Cart = ({
                       </span>
                     </div>
                     <div className="flex gap-4 mb-2">
-                      <span className="font-bold">Draft Discount 10%</span>
+                      <span className="font-bold">Draft Discount {discountValue}%</span>
                       <span className="text-success">
                         Rs.
                         {(
