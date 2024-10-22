@@ -1,16 +1,16 @@
-import React from "react";
 import defaultimage from "/defaultimge.png";
 
 interface CardProps {
   image?: string;
   name?: string;
+  onClick?:()=>void
 }
 
-function Card({ image, name }: CardProps) {
+function Card({ image, name, onClick }: CardProps) {
 
   return (
     <div className="cursor-pointer py-2 px-2 bg-white border border-gray-600 rounded-[48px]   shadow-md shadow-gray-600 hover:scale-[1.09]">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between" onClick={onClick}>
         <img
           className="max-h-12 max-w-12 min-w-12 min-h-12 rounded-full object-cover"
           src={image === null ? defaultimage : image}

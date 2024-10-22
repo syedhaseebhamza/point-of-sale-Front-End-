@@ -1,4 +1,3 @@
-import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -7,6 +6,7 @@ import {
   faList,
   faUtensils,
   faTags,
+  faGear,
   // faBars,
   faDollarSign,
   faShoppingCart,
@@ -23,6 +23,7 @@ const sideBarMenu = [
   { menuName: "Sales", path: "/sales", icon: faDollarSign },
   { menuName: "Order", path: "/order", icon: faShoppingCart },
   // { menuName: "Menu", path: "/menu", icon: faBars },
+  { menuName: "Setting", path: "/setting", icon: faGear },
 ];
 
 function Sidebar({ sidebarWidth }: any) {
@@ -35,8 +36,8 @@ function Sidebar({ sidebarWidth }: any) {
       }  min-h-screen `}
     >
       <div>
-        <ul className="space-y-4 flex flex-col justify-between items-center">
-          <POSIcon/>
+        <POSIcon className="mx-auto mb-4" />
+        <ul className="space-y-4">
           {sideBarMenu.map((menuItem) => (
             <li key={menuItem.path}>
               <NavLink
