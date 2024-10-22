@@ -10,10 +10,10 @@ import Order from "@/pages/Order";
 import RolePermission from "@/pages/RolePermission";
 import Sales from "@/pages/Sales";
 import UserPage from "@/pages/UserPage";
-import { Navigate, createBrowserRouter as Router } from "react-router-dom";
+import { Navigate, createBrowserRouter as createBrowserRouter } from "react-router-dom";
 
 
-export const routes = Router([
+export const routes = createBrowserRouter([
   {
     path: "*",
     element: <div>Page not found</div>,
@@ -28,7 +28,7 @@ export const routes = Router([
     children: [
       {
         path: "/",
-        element: <Navigate to="/login" replace />, // Redirect to /login by default
+        element: <Navigate to="/login" replace />,
       },
       {
         path: "/user",
