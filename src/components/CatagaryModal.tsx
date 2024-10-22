@@ -20,7 +20,7 @@ function CatagaryModal({
     name: "",
     description: "",
   });
-  const [campaignPicture, setCampaignPicture] = useState<File | null>(null);
+  const [categoryPicture, setCategoryPicture] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const handleCategoryFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -35,8 +35,8 @@ function CatagaryModal({
     formData.append("name", categoryValues.name);
     formData.append("description", categoryValues.description);
 
-    if (campaignPicture) {
-      formData.append("image", campaignPicture);
+    if (categoryPicture) {
+      formData.append("image", categoryPicture);
     }
 
     try {
@@ -58,8 +58,8 @@ function CatagaryModal({
     const formData = new FormData();
     formData.append("name", categoryValues.name);
     formData.append("description", categoryValues.description);
-    if (campaignPicture) {
-      formData.append("image", campaignPicture);
+    if (categoryPicture) {
+      formData.append("image", categoryPicture);
     }
 
     try {
@@ -88,7 +88,7 @@ function CatagaryModal({
   const handleCampaignPicture = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
-      setCampaignPicture(file);
+      setCategoryPicture(file);
       setImagePreview(URL.createObjectURL(file));
     }
   };
@@ -130,7 +130,7 @@ function CatagaryModal({
             <input
               onChange={handleCampaignPicture}
               accept="image/*"
-              id="campaignPicture"
+              id="categoryPicture"
               hidden
               type="file"
             />
@@ -143,21 +143,19 @@ function CatagaryModal({
                   alt="Selected"
                   className="min-h-[40px] max-h-[40px] min-w-[40px] max-w-[40px] object-cover rounded-full"
                 />
-                {isEditMode && (
-                  <label
-                    className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50 rounded-full opacity-0 hover:opacity-100 cursor-pointer"
-                    htmlFor="campaignPicture"
-                  >
-                    <PlusIcon className="text-white text-[24px]" />
-                  </label>
-                )}
+                <label
+                  className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50 rounded-full opacity-0 hover:opacity-100 cursor-pointer"
+                  htmlFor="categoryPicture"
+                >
+                  <PlusIcon className="text-white text-[24px]" />
+                </label>
               </div>
             ) : (
               <label
                 className="flex mt-[10px] justify-center rounded-full items-center cursor-pointer bg-[#E8E8E8] w-[60px] h-[60px]"
-                htmlFor="campaignPicture"
+                htmlFor="categoryPicture"
               >
-                <div className="flex justify-center rounded-full  min-h-[40px] max-h-[40px] min-w-[40px] max-w-[40px] border-[gray] items-center text-[40px]">
+                <div className="flex justify-center rounded-full min-h-[40px] max-h-[40px] min-w-[40px] max-w-[40px] border-[gray] items-center text-[40px]">
                   <PlusIcon />
                 </div>
               </label>

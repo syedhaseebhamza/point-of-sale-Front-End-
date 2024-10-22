@@ -84,19 +84,19 @@ function ItemModal({
       formData.append("name", formValues.name);
       formData.append("retailPrice", formValues.retailPrice);
       formData.append("variants", JSON.stringify(variants));
-      
+
       if (itemPicture) {
         formData.append("image", itemPicture);
       }
-  
+
       const response = await handelAddNewItem(formData, selectedCatagoryId);
-      
+
       if (response.message === "Item created successfully") {
         onItemAdded(response.newItem);
       } else {
         onItemAdded(response.item);
       }
-  
+
       setToast({
         type: "success",
         message: "Item added successfully",
@@ -111,30 +111,29 @@ function ItemModal({
       closeItemModal();
     }
   };
-  
 
   const handleSave = async () => {
-    
-      const formData = new FormData();
-      formData.append("categoryName", formValues.categoryName);
-      formData.append("name", formValues.name);
-      formData.append("retailPrice", formValues.retailPrice);
-      formData.append("variants", JSON.stringify(variants));
-      
-      if (itemPicture) {
-        formData.append("image", itemPicture);
-      }
-      try {
-        
+    const formData = new FormData();
+    formData.append("categoryName", formValues.categoryName);
+    formData.append("name", formValues.name);
+    formData.append("retailPrice", formValues.retailPrice);
+    formData.append("variants", JSON.stringify(variants));
+
+    if (itemPicture) {
+      formData.append("image", itemPicture);
+    }
+    if (selectedCatagoryId) {
+      formData.append("categoryId", selectedCatagoryId);
+    }
+    try {
       await handelUpdateItem(formData, selectedItemId);
-      
+
       closeItemModal();
       onItemUpdated();
     } catch (error) {
       console.error("Error updating item:", error);
     }
   };
-  
 
   useEffect(() => {
     if (isEditMode && selectedItemId) {
@@ -212,7 +211,7 @@ function ItemModal({
             label="Reail Price"
             onChange={handelItemFormChange}
           />
-           <div>
+          <div>
             <input
               onChange={handleItemPicture}
               accept="image/*"
@@ -223,12 +222,18 @@ function ItemModal({
 
             <div>Upload image</div>
             {imagePreview ? (
-              <div className="flex justify-center items-center min-h-[60px] max-h-[60px] min-w-[60px] max-w-[60px] mt-[13px] border border-[gray] rounded-full">
+              <div className="relative flex justify-center items-center min-h-[60px] max-h-[60px] min-w-[60px] max-w-[60px] mt-[13px] border border-gray-300 rounded-full">
                 <img
                   src={imagePreview}
                   alt="Selected"
-                  className="min-h-[40px]  max-h-[40px] min-w-[40px] max-w-[40px] object-cover rounded-full"
+                  className="min-h-[40px] max-h-[40px] min-w-[40px] max-w-[40px] object-cover rounded-full"
                 />
+                <label
+                  className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50 rounded-full opacity-0 hover:opacity-100 cursor-pointer"
+                  htmlFor="itemPicture"
+                >
+                  <PlusIcon className="text-white text-[24px]" />
+                </label>
               </div>
             ) : (
               <label

@@ -283,19 +283,27 @@ function DealModal({
 
             <div className="mb-2">Upload Image</div>
             {imagePreview ? (
-              <div className="flex justify-center items-center w-16 h-16 mt-2 border border-gray-300 rounded-full">
+              <div className="relative flex justify-center items-center min-h-[60px] max-h-[60px] min-w-[60px] max-w-[60px] mt-[13px] border border-gray-300 rounded-full">
                 <img
                   src={imagePreview}
                   alt="Selected"
-                  className="w-12 h-12 object-cover rounded-full"
+                  className="min-h-[40px] max-h-[40px] min-w-[40px] max-w-[40px] object-cover rounded-full"
                 />
+                <label
+                  className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50 rounded-full opacity-0 hover:opacity-100 cursor-pointer"
+                  htmlFor="itemPicture"
+                >
+                  <PlusIcon className="text-white text-[24px]" />
+                </label>
               </div>
             ) : (
               <label
-                className="flex justify-center items-center cursor-pointer bg-gray-200 w-16 h-16 mt-2 rounded-full"
+                className="flex mt-[10px] justify-center rounded-full items-center cursor-pointer bg-[#E8E8E8] w-[60px] h-[60px]"
                 htmlFor="itemPicture"
               >
-                <PlusIcon />
+                <div className="flex justify-center rounded-full  min-h-[40px] max-h-[40px] min-w-[40px] max-w-[40px] border-[gray] items-center text-[40px]">
+                  <PlusIcon />
+                </div>
               </label>
             )}
           </div>

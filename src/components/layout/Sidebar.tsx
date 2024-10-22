@@ -7,7 +7,7 @@ import {
   faList,
   faUtensils,
   faTags,
-  faBars,
+  // faBars,
   faDollarSign,
   faShoppingCart,
 } from "@fortawesome/free-solid-svg-icons";
@@ -22,7 +22,7 @@ const sideBarMenu = [
   { menuName: "Deals", path: "/deals", icon: faTags },
   { menuName: "Sales", path: "/sales", icon: faDollarSign },
   { menuName: "Order", path: "/order", icon: faShoppingCart },
-  { menuName: "Menu", path: "/menu", icon: faBars },
+  // { menuName: "Menu", path: "/menu", icon: faBars },
 ];
 
 function Sidebar({ sidebarWidth }: any) {

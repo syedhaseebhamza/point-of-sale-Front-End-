@@ -53,6 +53,9 @@ const Cart = ({
 
   const handleDraftTab = async () => {
     try {
+      if (selectedItems && selectedItems.length > 0) {
+        await handlePlaceOrder(true);
+      }
       const response = await handelFetchAllDraftItem(true);
       setDraftItem(response.orders);
       setActiveTab("draft");
@@ -83,7 +86,6 @@ const Cart = ({
       .then((res) => {
         const filterItem = items.filter((item: any) => item._id !== id);
         setItems(filterItem);
-        handleDraftTab();
       })
       .catch((error) => {
         setToast({
@@ -149,22 +151,31 @@ const Cart = ({
         totalPrice: totalPrice,
         isDraft: false,
       };
-      await handelPlaceOrder(draftData);
+      const response = await handelPlaceOrder(draftData);
+      if (isDraft === false) {
+        generatePDFReceipt(response.newOrder);
+      }
       DeleteOrders(selectedDraftItem._id);
       setSelectedItems([]);
       setSelectedSizes({});
       clearall();
+      setIsDraftItemSelected(false)
+      fetchItems()
       setActiveTab("newOrderBill");
       return;
     }
 
     try {
       const response = await handelPlaceOrder(data);
-      generatePDFReceipt(response.newOrder);
+      if (isDraft === false) {
+        generatePDFReceipt(response.newOrder);
+      }
       setSelectedItems([]);
       setSelectedSizes({});
       clearall();
-      fetchItems();
+      setIsDraftItemSelected(false)
+      fetchItems()
+      setActiveTab("newOrderBill");
     } catch (error) {
       console.error("Failed to Placed Order", error);
     }
@@ -217,7 +228,10 @@ const Cart = ({
       await handelUpdateOrder(UpdateDraftData, selectedDraftItem._id);
       setSelectedItems([]);
       clearall();
-      handleDraftTab();
+      fetchItems();
+      setActiveTab("newOrderBill");
+      setIsDraftItemSelected(false);
+
       setToast({
         type: "success",
         message: "Draft Item Updated successfully!",
@@ -233,7 +247,7 @@ const Cart = ({
       <div className="basis-full order-1 md:order-2 md:basis-[30%] border-l border-gray-100">
         <div className="shadow-lg">
           <div className="flex  justify-between items-center  rounded-xl shadow-md p-4">
-            <span
+            <button
               className={`font-semibold text-lg cursor-pointer ${
                 activeTab === "newOrderBill"
                   ? "text-black border-b-2 border-[black]"
@@ -242,17 +256,22 @@ const Cart = ({
               onClick={() => setActiveTab("newOrderBill")}
             >
               New Order Bill
-            </span>
-            <span
-              className={`font-semibold text-lg cursor-pointer ${
-                activeTab === "draft"
-                  ? "text-black border-b-2 border-[black]"
-                  : "text-gray-400"
-              }`}
-              onClick={handleDraftTab}
-            >
-              Draft
-            </span>
+            </button>
+            {isDraftItemSelected ? (
+              ""
+            ) : (
+              <button
+                className={`font-semibold text-lg cursor-pointer ${
+                  activeTab === "draft"
+                    ? "text-black border-b-2 border-[black]"
+                    : "text-gray-400"
+                }`}
+                onClick={handleDraftTab}
+              >
+                Draft
+              </button>
+            )}
+
             <span className="text-disabled text-lg">
               {formatDate(Date.now())}
             </span>
@@ -524,29 +543,37 @@ const Cart = ({
             <div className="flex w-full gap-2">
               <Button
                 label={"Place Order"}
-                className={` text-white rounded-md w-1/2`}
+                className={` text-white rounded-md w-1/2 `}
                 onClick={() => {
                   handlePlaceOrder(false);
                 }}
               />
-              <Button
-                label={"Draft"}
-                className={` text-white rounded-md w-1/2`}
-                onClick={() => {
-                  handlePlaceOrder(true);
-                  setToast({
-                    type: "success",
-                    message: "Item Add to Draft successfully!",
-                  });
-                }}
-              />
-              <Button
-                label={"Update"}
-                className={` text-white rounded-md w-1/2`}
-                onClick={() => {
-                  UpdateOrder();
-                }}
-              />
+              {isDraftItemSelected ? (
+                <Button
+                  label={"Update"}
+                  className={` text-white rounded-md w-1/2`}
+                  onClick={() => {
+                    UpdateOrder();
+                  }}
+                />
+              ) : (
+                <Button
+                  label={"Draft"}
+                  className={`text-white rounded-md w-1/2 ${
+                    selectedItems.length === 0
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
+                  onClick={() => {
+                    handlePlaceOrder(true);
+                    setToast({
+                      type: "success",
+                      message: "Item Add to Draft successfully!",
+                    });
+                  }}
+                  disabled={selectedItems.length === 0}
+                />
+              )}
             </div>
           </div>
         </div>
